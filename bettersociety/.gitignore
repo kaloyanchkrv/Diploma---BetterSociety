@@ -46,3 +46,6 @@ app.*.map.json
 .externalNativeBuild
 .cxx
 local.properties
+# Node artifact files
+**/node_modules
+dist/
