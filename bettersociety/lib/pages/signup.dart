@@ -1,74 +1,39 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'dart:html';
-import 'dart:io';
-
-import 'package:bettersociety/pages/home.dart';
-import 'package:bettersociety/pages/reset.dart';
-import 'package:bettersociety/pages/signup.dart';
-import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
-final FirebaseAuth _auth = FirebaseAuth.instance;
+final firebaseAuth = FirebaseAuth.instance;
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
+class SignupPage extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-        title: "BetterSociety",
-        theme: ThemeData(
-          primarySwatch: Colors.deepPurple,
-        ),
-        debugShowCheckedModeBanner: false,
-        home: const MyHomePage(title: 'BetterSociety'),
-        routes: <String, WidgetBuilder>{
-          '/signup': (BuildContext context) => new SignupPage(),
-          '/reset': (BuildContext context) => new ResetPasswordPage(),
-        }
-        );
-  }
+  _SignupPageState createState() => _SignupPageState();
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
+class _SignupPageState extends State<SignupPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  int _success = 1;
-  String _userEmail = "";
+  late bool _success;
+  late String _userEmail;
 
-  void _login() async {
-    final User? user = (await _auth
-            .signInWithEmailAndPassword(
-                email: _emailController.text.toString().trim(),
-                password: _passwordController.text))
+  void _register() async {
+    final User? user = (await firebaseAuth
+            .createUserWithEmailAndPassword(
+                email: _emailController.text, password: _passwordController.text)
+            .catchError((err) {
+      print(err);
+    }))
         .user;
     if (user != null) {
       setState(() {
-        _success = 2;
+        _success = true;
         _userEmail = user.email!;
       });
     } else {
       setState(() {
-        _success = 3;
+        _success = false;
       });
     }
   }
@@ -76,23 +41,24 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
+        body: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
           Container(
               child: Stack(children: <Widget>[
             Container(
-                padding: EdgeInsets.fromLTRB(15, 110, 0, 0),
-                alignment: Alignment.center,
-                child: const Text("BetterSociety",
-                    style:
-                        TextStyle(fontSize: 40, fontWeight: FontWeight.bold)))
+              padding: EdgeInsets.fromLTRB(15, 110, 0, 0),
+              child: const Text(
+                "Register",
+                style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+              ),
+            )
           ])),
           Container(
               padding: EdgeInsets.only(top: 35, left: 20, right: 30),
               child: Column(
                 children: <Widget>[
-                   TextField(
+                  TextField(
                     controller: _emailController,
                     decoration: InputDecoration(
                         labelText: 'Email',
@@ -105,7 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           borderSide: BorderSide(color: Colors.green),
                         )),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
                   TextField(
@@ -125,36 +91,6 @@ class _MyHomePageState extends State<MyHomePage> {
                   SizedBox(
                     height: 5,
                   ),
-                  Container(
-                    alignment: Alignment(1, 0),
-                    padding: EdgeInsets.only(top: 15, left: 20),
-                    child:  InkWell(
-                      child: Text(
-                        'Forgot Password',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Montserrat',
-                          decoration: TextDecoration.underline,
-                        ),
-                      ),
-                      onTap: () {
-                        Navigator.of(context).pushNamed('/reset');
-                      },
-                    ),
-                  ),
-                  Container(
-                    alignment: Alignment.center,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Text(
-                      _success == 1
-                          ? ''
-                          : (_success == 2
-                          ? 'Successfully signed in as $_userEmail'
-                          : 'Sign in failed'),
-                      style: const TextStyle(color: Colors.red),
-                    )
-                    ),
                   SizedBox(
                     height: 40,
                   ),
@@ -166,12 +102,12 @@ class _MyHomePageState extends State<MyHomePage> {
                           color: Colors.black,
                           elevation: 7,
                           child: GestureDetector(
-                            onTap: () async {
-                              _login();
+                            onTap: () {
+                              _register();
                             },
                             child: const Center(
                               child: Text(
-                                "Login",
+                                "Register",
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
@@ -188,10 +124,10 @@ class _MyHomePageState extends State<MyHomePage> {
                     children: <Widget>[
                       InkWell(
                         onTap: () {
-                          Navigator.of(context).pushNamed('/signup');
+                          Navigator.of(context).pop();
                         },
                         child: const Text(
-                          "Register",
+                          "Already have an account? Login",
                           style: TextStyle(
                             fontFamily: 'Montserrat',
                             fontWeight: FontWeight.bold,
@@ -203,8 +139,6 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ],
               ))
-        ],
-      ),
-    );
+        ]));
   }
 }
