@@ -1,54 +1,54 @@
 {
-    "project_info": {
-      "project_number": "175760544897",
-      "project_id": "bettersociety-83e83",
-      "storage_bucket": "bettersociety-83e83.appspot.com"
-    },
-    "client": [
-      {
-        "client_info": {
-          "mobilesdk_app_id": "1:175760544897:android:292c347d76180f4a48a980",
-          "android_client_info": {
-            "package_name": "com.kaloyan.betterSociety"
+  "project_info": {
+    "project_number": "175760544897",
+    "project_id": "bettersociety-83e83",
+    "storage_bucket": "bettersociety-83e83.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:175760544897:android:292c347d76180f4a48a980",
+        "android_client_info": {
+          "package_name": "com.kaloyan.betterSociety"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "175760544897-i4qjfithfvegd16hl999iq1klmp909p5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kaloyan.betterSociety",
+            "certificate_hash": "e976056e2c28ecb08754eaed4a77ae2e8d490de0"
           }
         },
-        "oauth_client": [
-          {
-            "client_id": "175760544897-i4qjfithfvegd16hl999iq1klmp909p5.apps.googleusercontent.com",
-            "client_type": 1,
-            "android_info": {
-              "package_name": "com.kaloyan.betterSociety",
-              "certificate_hash": "e976056e2c28ecb08754eaed4a77ae2e8d490de0"
-            }
-          },
-          {
-            "client_id": "175760544897-a94vkm1gkr5ok4pr4d15kial7s005meq.apps.googleusercontent.com",
-            "client_type": 3
-          }
-        ],
-        "api_key": [
-          {
-            "current_key": "AIzaSyA1yJftD2K3sD43f6X8eFpxQtxT8_mAmRo"
-          }
-        ],
-        "services": {
-          "appinvite_service": {
-            "other_platform_oauth_client": [
-              {
-                "client_id": "175760544897-a94vkm1gkr5ok4pr4d15kial7s005meq.apps.googleusercontent.com",
-                "client_type": 3
-              },
-              {
-                "client_id": "175760544897-tou1pj83h8hsrl0dq5qu31p0p7kbr1m1.apps.googleusercontent.com",
-                "client_type": 2,
-                "ios_info": {
-                  "bundle_id": "com.kaloyan.betterSociety"
-                }
+        {
+          "client_id": "175760544897-a94vkm1gkr5ok4pr4d15kial7s005meq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA1yJftD2K3sD43f6X8eFpxQtxT8_mAmRo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "175760544897-a94vkm1gkr5ok4pr4d15kial7s005meq.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "175760544897-g0poodh1oii5g3sn7hs6j04vlvtth9mc.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.bettersociety"
               }
-            ]
-          }
+            }
+          ]
         }
       }
-    ],
-    "configuration_version": "1"
-  }
+    }
+  ],
+  "configuration_version": "1"
+}
