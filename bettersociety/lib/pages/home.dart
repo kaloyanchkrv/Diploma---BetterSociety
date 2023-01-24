@@ -57,24 +57,24 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: PageView(
+      controller: pageController,
+      onPageChanged: onPageChanged,
+      physics: NeverScrollableScrollPhysics(),
       children: <Widget>[
         ActivityFeedPage(),
         UploadPage(),
         SearchPage(),
         ProfilePage(),
       ],
-      controller: pageController,
-      onPageChanged: onPageChanged,
-      physics: NeverScrollableScrollPhysics(),
     ),
     bottomNavigationBar: CupertinoTabBar(
       currentIndex: pageIndex,
       onTap: onTap,
-      activeColor: Theme.of(context).primaryColor,
+      activeColor: Colors.greenAccent,
       items: [
-        BottomNavigationBarItem(icon: Icon(Icons.whatshot)),
-        BottomNavigationBarItem(icon: Icon(Icons.library_add, size: 35)),
-        BottomNavigationBarItem(icon: Icon(Icons.search)),
+        const BottomNavigationBarItem(icon: Icon(Icons.whatshot)),
+        const BottomNavigationBarItem(icon: Icon(Icons.library_add, size: 35)),
+        const  BottomNavigationBarItem(icon: Icon(Icons.search)),
         BottomNavigationBarItem(icon: Icon(Icons.account_circle)),
       ],
     ),

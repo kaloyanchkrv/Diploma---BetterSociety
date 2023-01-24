@@ -1,3 +1,4 @@
+import 'package:bettersociety/widgets/progress-bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
@@ -15,7 +16,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: header(titleText: "Profile"),
-      body: const Text("Profile"),
+      body: linearProgress(),
     );
   }
 }

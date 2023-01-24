@@ -1,3 +1,4 @@
+import 'package:bettersociety/widgets/progress-bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
@@ -15,7 +16,7 @@ class _ActivityFeedPageState extends State<ActivityFeedPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: header(isAppTitle: true),
-      body: const Text("Activity Feed"),
+      body: circularProgress(),
     );
   }
 }
