@@ -31,40 +31,42 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.deepPurple,
         ),
         debugShowCheckedModeBanner: false,
-        home: const MyHomePage(title: 'BetterSociety'),
+        home: const LoginPage(title: 'BetterSociety'),
         routes: <String, WidgetBuilder>{
+          '/login': (BuildContext context) => new LoginPage(title: 'BetterSociety'),
           '/signup': (BuildContext context) => new SignupPage(),
           '/reset': (BuildContext context) => new ResetPasswordPage(),
-        }
-        );
+          '/home': (BuildContext context) => new HomePage(),
+        });
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
+class LoginPage extends StatefulWidget {
+  const LoginPage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _LoginPageState createState() => _LoginPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   int _success = 1;
   String _userEmail = "";
+  bool isAuth = false;
 
   void _login() async {
-    final User? user = (await _auth
-            .signInWithEmailAndPassword(
-                email: _emailController.text.toString().trim(),
-                password: _passwordController.text))
+    final User? user = (await _auth.signInWithEmailAndPassword(
+            email: _emailController.text.toString().trim(),
+            password: _passwordController.text))
         .user;
     if (user != null) {
       setState(() {
         _success = 2;
         _userEmail = user.email!;
+        isAuth = true;
       });
     } else {
       setState(() {
@@ -92,7 +94,7 @@ class _MyHomePageState extends State<MyHomePage> {
               padding: EdgeInsets.only(top: 35, left: 20, right: 30),
               child: Column(
                 children: <Widget>[
-                   TextField(
+                  TextField(
                     controller: _emailController,
                     decoration: InputDecoration(
                         labelText: 'Email',
@@ -128,7 +130,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   Container(
                     alignment: Alignment(1, 0),
                     padding: EdgeInsets.only(top: 15, left: 20),
-                    child:  InkWell(
+                    child: InkWell(
                       child: Text(
                         'Forgot Password',
                         style: TextStyle(
@@ -144,17 +146,16 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   ),
                   Container(
-                    alignment: Alignment.center,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Text(
-                      _success == 1
-                          ? ''
-                          : (_success == 2
-                          ? 'Successfully signed in as $_userEmail'
-                          : 'Sign in failed'),
-                      style: const TextStyle(color: Colors.red),
-                    )
-                    ),
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        _success == 1
+                            ? ''
+                            : (_success == 2
+                                ? 'Successfully signed in as $_userEmail'
+                                : 'Sign in failed'),
+                        style: const TextStyle(color: Colors.red),
+                      )),
                   SizedBox(
                     height: 40,
                   ),
@@ -167,6 +168,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           elevation: 7,
                           child: GestureDetector(
                             onTap: () async {
+                              Navigator.of(context).pushNamed('/home');
                               _login();
                             },
                             child: const Center(
