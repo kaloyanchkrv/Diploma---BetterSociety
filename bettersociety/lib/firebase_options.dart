@@ -25,10 +25,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -65,6 +62,17 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyB2yNH8ruSfU-2jbaJFjwZCYSZ50LsDEvc',
+    appId: '1:175760544897:ios:97cd15a5a38e02fe48a980',
+    messagingSenderId: '175760544897',
+    projectId: 'bettersociety-83e83',
+    storageBucket: 'bettersociety-83e83.appspot.com',
+    androidClientId: '175760544897-i4qjfithfvegd16hl999iq1klmp909p5.apps.googleusercontent.com',
+    iosClientId: '175760544897-g0poodh1oii5g3sn7hs6j04vlvtth9mc.apps.googleusercontent.com',
+    iosBundleId: 'com.example.bettersociety',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyB2yNH8ruSfU-2jbaJFjwZCYSZ50LsDEvc',
     appId: '1:175760544897:ios:97cd15a5a38e02fe48a980',
     messagingSenderId: '175760544897',

@@ -1,18 +1,22 @@
 // ignore_for_file: prefer_const_constructors
-
-import 'dart:html';
 import 'dart:io';
-
+import 'package:bettersociety/pages/activity.dart';
+import 'package:bettersociety/pages/create.account.dart';
 import 'package:bettersociety/pages/home.dart';
 import 'package:bettersociety/pages/reset.dart';
 import 'package:bettersociety/pages/signup.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:bettersociety/models/user.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
+final usersRef = FirebaseFirestore.instance.collection('users');
+final DateTime timestamp = DateTime.now();
+UserModel? currentUser;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,7 +37,8 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         home: const LoginPage(title: 'BetterSociety'),
         routes: <String, WidgetBuilder>{
-          '/login': (BuildContext context) => new LoginPage(title: 'BetterSociety'),
+          '/login': (BuildContext context) =>
+              new LoginPage(title: 'BetterSociety'),
           '/signup': (BuildContext context) => new SignupPage(),
           '/reset': (BuildContext context) => new ResetPasswordPage(),
           '/home': (BuildContext context) => new HomePage(),
@@ -57,10 +62,14 @@ class _LoginPageState extends State<LoginPage> {
   String _userEmail = "";
   bool isAuth = false;
 
-  void _login() async {
-    final User? user = (await _auth.signInWithEmailAndPassword(
-            email: _emailController.text.toString().trim(),
-            password: _passwordController.text))
+  Future<void> _login() async {
+    final user = (await _auth
+            .signInWithEmailAndPassword(
+                email: _emailController.text.toString().trim(),
+                password: _passwordController.text)
+            .catchError((err) {
+      print(err);
+    }))
         .user;
     if (user != null) {
       setState(() {
@@ -73,6 +82,31 @@ class _LoginPageState extends State<LoginPage> {
         _success = 3;
       });
     }
+
+    createUserInFirestore();
+  }
+
+  createUserInFirestore() async {
+    final account = _auth.currentUser;
+
+    DocumentSnapshot doc = await usersRef.doc(account!.uid).get();
+
+    if (!doc.exists) {
+      final username = await Navigator.push(context,
+          MaterialPageRoute(builder: (context) => new CreateAccountPage()));
+
+      usersRef.doc(account.uid).set({
+        "id": account.uid,
+        "username": username,
+        "email": account.email,
+        "bio": "",
+      });
+
+      doc = await usersRef.doc(account.uid).get();
+
+    }
+
+    currentUser = UserModel.fromDocument(doc);
   }
 
   @override
@@ -146,16 +180,9 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   Container(
-                      alignment: Alignment.center,
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
-                        _success == 1
-                            ? ''
-                            : (_success == 2
-                                ? 'Successfully signed in as $_userEmail'
-                                : 'Sign in failed'),
-                        style: const TextStyle(color: Colors.red),
-                      )),
+                    alignment: Alignment.center,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                  ),
                   SizedBox(
                     height: 40,
                   ),
@@ -168,8 +195,11 @@ class _LoginPageState extends State<LoginPage> {
                           elevation: 7,
                           child: GestureDetector(
                             onTap: () async {
-                              Navigator.of(context).pushNamed('/home');
-                              _login();
+                              await _login();
+
+                              if (_success == 2) {
+                                Navigator.of(context).pushNamed('/home');
+                              }
                             },
                             child: const Center(
                               child: Text(
