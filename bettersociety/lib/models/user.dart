@@ -5,12 +5,14 @@ class UserModel {
   final String username;
   final String email;
   final String bio;
+  final String photoUrl;
 
   UserModel({
     required this.id,
     required this.username,
     required this.email,
     required this.bio,
+    required this.photoUrl,
   });
 
   factory UserModel.fromDocument(DocumentSnapshot doc) {
@@ -19,6 +21,8 @@ class UserModel {
       username: doc['username'],
       email: doc['email'],
       bio: doc['bio'],
+      photoUrl: doc['photoUrl'],
     );
   }
+
 }

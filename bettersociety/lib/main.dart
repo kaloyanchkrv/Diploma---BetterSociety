@@ -100,6 +100,7 @@ class _LoginPageState extends State<LoginPage> {
         "username": username,
         "email": account.email,
         "bio": "",
+        "photoUrl": "",
       });
 
       doc = await usersRef.doc(account.uid).get();
