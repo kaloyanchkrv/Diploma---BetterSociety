@@ -1,6 +1,8 @@
 {
     "cSpell.words": [
-        "ARGB"
+        "ARGB",
+        "Cordinates"
     ],
-    "java.configuration.updateBuildConfiguration": "interactive"
+    "java.configuration.updateBuildConfiguration": "interactive",
+    "dart.flutterShowEmulators": "local"
 }

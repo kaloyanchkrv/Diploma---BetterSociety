@@ -1,18 +1,24 @@
 // ignore_for_file: prefer_const_constructors
-
-import 'dart:html';
 import 'dart:io';
-
+import 'package:bettersociety/pages/activity.dart';
+import 'package:bettersociety/pages/create.account.dart';
+import 'package:bettersociety/pages/create.post.dart';
 import 'package:bettersociety/pages/home.dart';
 import 'package:bettersociety/pages/reset.dart';
 import 'package:bettersociety/pages/signup.dart';
+import 'package:bettersociety/pages/upload.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:bettersociety/models/user.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
+final usersRef = FirebaseFirestore.instance.collection('users');
+final DateTime timestamp = DateTime.now();
+UserModel? currentUser;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,48 +35,85 @@ class MyApp extends StatelessWidget {
         title: "BetterSociety",
         theme: ThemeData(
           primarySwatch: Colors.deepPurple,
+          useMaterial3: true,
         ),
         debugShowCheckedModeBanner: false,
-        home: const MyHomePage(title: 'BetterSociety'),
+        home: const LoginPage(title: 'BetterSociety'),
         routes: <String, WidgetBuilder>{
+          '/login': (BuildContext context) =>
+              new LoginPage(title: 'BetterSociety'),
           '/signup': (BuildContext context) => new SignupPage(),
           '/reset': (BuildContext context) => new ResetPasswordPage(),
-        }
-        );
+          '/home': (BuildContext context) => new HomePage(),
+          '/post': (BuildContext context) => new CreatePostPage(),
+          '/upload': (BuildContext context) => new UploadPage(),
+        });
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
+class LoginPage extends StatefulWidget {
+  const LoginPage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _LoginPageState createState() => _LoginPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   int _success = 1;
   String _userEmail = "";
+  bool isAuth = false;
+  final _formKey = GlobalKey<FormState>();
 
-  void _login() async {
-    final User? user = (await _auth
+
+  Future<void> _login() async {
+    final user = (await _auth
             .signInWithEmailAndPassword(
                 email: _emailController.text.toString().trim(),
-                password: _passwordController.text))
+                password: _passwordController.text)
+            .catchError((err) {
+      print(err);
+    }))
         .user;
     if (user != null) {
       setState(() {
         _success = 2;
         _userEmail = user.email!;
+        isAuth = true;
       });
     } else {
       setState(() {
         _success = 3;
       });
     }
+
+    createUserInFirestore();
+  }
+
+  createUserInFirestore() async {
+    final account = _auth.currentUser;
+
+    DocumentSnapshot doc = await usersRef.doc(account!.uid).get();
+
+    if (!doc.exists) {
+      final username = await Navigator.push(context,
+          MaterialPageRoute(builder: (context) => new CreateAccountPage()));
+
+      usersRef.doc(account.uid).set({
+        "id": account.uid,
+        "username": username,
+        "email": account.email,
+        "bio": "",
+        "photoUrl": "",
+      });
+
+      doc = await usersRef.doc(account.uid).get();
+    }
+
+    currentUser = UserModel.fromDocument(doc);
   }
 
   @override
@@ -89,10 +132,13 @@ class _MyHomePageState extends State<MyHomePage> {
                         TextStyle(fontSize: 40, fontWeight: FontWeight.bold)))
           ])),
           Container(
-              padding: EdgeInsets.only(top: 35, left: 20, right: 30),
+            padding: EdgeInsets.only(top: 35, left: 20, right: 30),
+            child: Form(
+              key: _formKey,
               child: Column(
                 children: <Widget>[
-                   TextField(
+                  TextFormField(
+                    validator: (value) => value!.isEmpty ? 'Email can\'t be empty' : null,
                     controller: _emailController,
                     decoration: InputDecoration(
                         labelText: 'Email',
@@ -108,7 +154,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   SizedBox(
                     height: 20,
                   ),
-                  TextField(
+                  TextFormField(
+                    validator: (value) => value!.isEmpty ? 'Password can\'t be empty' : null,
                     controller: _passwordController,
                     decoration: InputDecoration(
                         labelText: 'Password',
@@ -128,7 +175,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   Container(
                     alignment: Alignment(1, 0),
                     padding: EdgeInsets.only(top: 15, left: 20),
-                    child:  InkWell(
+                    child: InkWell(
                       child: Text(
                         'Forgot Password',
                         style: TextStyle(
@@ -146,15 +193,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   Container(
                     alignment: Alignment.center,
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Text(
-                      _success == 1
-                          ? ''
-                          : (_success == 2
-                          ? 'Successfully signed in as $_userEmail'
-                          : 'Sign in failed'),
-                      style: const TextStyle(color: Colors.red),
-                    )
-                    ),
+                  ),
                   SizedBox(
                     height: 40,
                   ),
@@ -162,12 +201,15 @@ class _MyHomePageState extends State<MyHomePage> {
                       height: 40,
                       child: Material(
                           borderRadius: BorderRadius.circular(20),
-                          shadowColor: Colors.greenAccent,
-                          color: Colors.black,
+                          shadowColor: Colors.black,
+                          color: Colors.greenAccent,
                           elevation: 7,
                           child: GestureDetector(
                             onTap: () async {
-                              _login();
+                              if (_formKey.currentState!.validate()) {
+                                await _login();
+                                Navigator.of(context).pushNamed('/home');
+                              }
                             },
                             child: const Center(
                               child: Text(
@@ -202,7 +244,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ],
                   ),
                 ],
-              ))
+              ))),
         ],
       ),
     );

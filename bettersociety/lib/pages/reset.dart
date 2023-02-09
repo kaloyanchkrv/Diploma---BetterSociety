@@ -13,14 +13,14 @@ class ResetPasswordPage extends StatefulWidget {
 }
 
 class _ResetPasswordPageState extends State<ResetPasswordPage> {
+  final TextEditingController _emailController = TextEditingController();
+  int _success = 1;
+  String _userEmail = "";
+  final _formKey = GlobalKey<FormState>();
 
-   final TextEditingController _emailController = TextEditingController();
-   int _success = 1;
-   String _userEmail = "";
-
-   void _resetPassword() async {
-      await firebaseAuth.sendPasswordResetEmail(email: _emailController.text);
-     }
+  void _resetPassword() async {
+    await firebaseAuth.sendPasswordResetEmail(email: _emailController.text);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,68 +37,69 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                 style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
               ),
             )
-          ]
-          )
-          ),
+          ])),
           Container(
               padding: EdgeInsets.only(top: 35, left: 20, right: 30),
-              child: Column(
-                children: <Widget>[
-                  TextField(
-                    controller: _emailController,
-                    decoration: InputDecoration(
-                        labelText: 'Email',
-                        labelStyle: TextStyle(
-                          fontFamily: 'Montserrat',
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey,
-                        ),
-                        focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.green),
-                        )),
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                ],
-              )),
-              Container(
-                      height: 40,
-                      child: Material(
-                          borderRadius: BorderRadius.circular(20),
-                          shadowColor: Colors.greenAccent,
-                          color: Colors.black,
-                          elevation: 7,
-                          child: GestureDetector(
-                            onTap: () {
-                              _resetPassword();
-                              Navigator.pop(context);
-                            },
-                            child: const Center(
-                              child: Text(
-                                "Reset Password",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'Montserrat',
-                                ),
-                              ),
+              child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: <Widget>[
+                      TextFormField(
+                        validator: (value) =>
+                            value!.isEmpty ? 'Email can\'t be empty' : null,
+                        controller: _emailController,
+                        decoration: InputDecoration(
+                            labelText: 'Email',
+                            labelStyle: TextStyle(
+                              fontFamily: 'Montserrat',
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey,
                             ),
-                          ))),
-                          Container(
-                    alignment: Alignment.center,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Text(
-                      _success == 1
-                          ? ''
-                          : (_success == 2
-                          ? 'Successfully sent reset password email to  $_userEmail'
-                          : 'Email not sent'),
-                      style: const TextStyle(color: Colors.red),
-                    )
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.green),
+                            )),
+                      ),
+                      SizedBox(
+                        height: 15,
+                      ),
+                    ],
+                  ))),
+          Container(
+              height: 40,
+              margin: EdgeInsets.only(left: 25, right: 25),
+              child: Material(
+                  borderRadius: BorderRadius.circular(20),
+                  shadowColor: Colors.black,
+                  color: Colors.greenAccent,
+                  child: GestureDetector(
+                    onTap: () {
+                      if (_formKey.currentState!.validate()) {
+                        _resetPassword();
+                        Navigator.pop(context);
+                      }
+                    },
+                    child: const Center(
+                      child: Text(
+                        "Reset Password",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Montserrat',
+                        ),
+                      ),
                     ),
-        ]
-        )
-        );
+                  ))),
+          Container(
+              alignment: Alignment.center,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
+                _success == 1
+                    ? ''
+                    : (_success == 2
+                        ? 'Successfully sent reset password email to  $_userEmail'
+                        : 'Email not sent'),
+                style: const TextStyle(color: Colors.red),
+              )),
+        ]));
   }
 }
