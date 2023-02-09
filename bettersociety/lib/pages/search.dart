@@ -44,6 +44,10 @@ class _SearchPageState extends State<SearchPage> {
         usersRef.where("username", isGreaterThanOrEqualTo: query).get();
     setState(() {
       searchResultsFuture = users;
+
+      if (searchResultsFuture == null) {
+        circularProgress();
+      }
     });
   }
 

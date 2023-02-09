@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:bettersociety/widgets/main-header.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
@@ -17,11 +18,13 @@ class _SignupPageState extends State<SignupPage> {
   final TextEditingController _passwordController = TextEditingController();
   late bool _success;
   late String _userEmail;
+  final _formKey = GlobalKey<FormState>();
 
   void _register() async {
     final User? user = (await firebaseAuth
             .createUserWithEmailAndPassword(
-                email: _emailController.text, password: _passwordController.text)
+                email: _emailController.text,
+                password: _passwordController.text)
             .catchError((err) {
       print(err);
     }))
@@ -44,102 +47,108 @@ class _SignupPageState extends State<SignupPage> {
         body: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-          Container(
+               Container(
               child: Stack(children: <Widget>[
             Container(
-              padding: EdgeInsets.fromLTRB(15, 110, 0, 0),
-              child: const Text(
-                "Register",
-                style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
-              ),
-            )
+                padding: EdgeInsets.fromLTRB(15, 110, 0, 0),
+                alignment: Alignment.center,
+                child: const Text("BetterSociety",
+                    style:
+                        TextStyle(fontSize: 40, fontWeight: FontWeight.bold)))
           ])),
-          Container(
-              padding: EdgeInsets.only(top: 35, left: 20, right: 30),
-              child: Column(
-                children: <Widget>[
-                  TextField(
-                    controller: _emailController,
-                    decoration: InputDecoration(
-                        labelText: 'Email',
-                        labelStyle: TextStyle(
-                          fontFamily: 'Montserrat',
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey,
-                        ),
-                        focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.green),
-                        )),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  TextField(
-                    controller: _passwordController,
-                    decoration: InputDecoration(
-                        labelText: 'Password',
-                        labelStyle: TextStyle(
-                          fontFamily: 'Montserrat',
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey,
-                        ),
-                        focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.green),
-                        )),
-                    obscureText: true,
-                  ),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  SizedBox(
-                    height: 40,
-                  ),
-                  Container(
-                      height: 40,
-                      child: Material(
-                          borderRadius: BorderRadius.circular(20),
-                          shadowColor: Colors.greenAccent,
-                          color: Colors.black,
-                          elevation: 7,
-                          child: GestureDetector(
-                            onTap: () {
-                              _register();
-                              Navigator.of(context).pushNamed('/login');
-                            },
-                            child: const Center(
-                              child: Text(
-                                "Register",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'Montserrat',
+              Container(
+                padding: EdgeInsets.only(top: 35, left: 20, right: 30),
+                child: Form (
+                  key: _formKey,
+                  child: Column(
+                    children: <Widget>[
+                      TextFormField(
+                        validator: (value) => value!.isEmpty ? 'Email can\'t be empty' : null,
+                        controller: _emailController,
+                        decoration: InputDecoration(
+                            labelText: 'Email',
+                            labelStyle: TextStyle(
+                              fontFamily: 'Montserrat',
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey,
+                            ),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.green),
+                            )),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      TextFormField(
+                        validator: (value) => value!.isEmpty ? 'Password can\'t be empty' : null,
+                        controller: _passwordController,
+                        decoration: InputDecoration(
+                            labelText: 'Password', 
+                            labelStyle: TextStyle(
+                              fontFamily: 'Montserrat',
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey,
+                            ),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.green),
+                            )),
+                        obscureText: true,
+                      ),
+                      SizedBox(
+                        height: 5,
+                      ),
+                      SizedBox(
+                        height: 40,
+                      ),
+                      Container(
+                          height: 40,
+                          child: Material(
+                              borderRadius: BorderRadius.circular(20),
+                              shadowColor: Colors.black,
+                              color: Colors.greenAccent,
+                              elevation: 7,
+                              child: GestureDetector(
+                                onTap: () {
+                                  if (_formKey.currentState!.validate()) {
+                                    _register();
+                                    Navigator.of(context).pushNamed('/login');
+                                  }
+                                  
+                                },
+                                child: const Center(
+                                  child: Text(
+                                    "Register",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'Montserrat',
+                                    ),
+                                  ),
                                 ),
+                              ))),
+                      SizedBox(
+                        height: 15,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          InkWell(
+                            onTap: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text(
+                              "Already have an account? Login",
+                              style: TextStyle(
+                                fontFamily: 'Montserrat',
+                                fontWeight: FontWeight.bold,
+                                decoration: TextDecoration.underline,
                               ),
                             ),
-                          ))),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      InkWell(
-                        onTap: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text(
-                          "Already have an account? Login",
-                          style: TextStyle(
-                            fontFamily: 'Montserrat',
-                            fontWeight: FontWeight.bold,
-                            decoration: TextDecoration.underline,
                           ),
-                        ),
+                        ],
                       ),
                     ],
-                  ),
-                ],
-              ))
-        ]));
+                  ))),
+            ]));
   }
 }

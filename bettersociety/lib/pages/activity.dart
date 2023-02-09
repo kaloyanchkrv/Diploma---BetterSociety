@@ -49,7 +49,7 @@ class _ActivityFeedPageState extends State<ActivityFeedPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: header(isAppTitle: true),
+        appBar: Header(isAppTitle: true, removeBackButton: true),
         body: Text("Activity Feed Page"));
   }
 }

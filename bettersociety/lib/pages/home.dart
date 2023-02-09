@@ -2,10 +2,12 @@
 
 import 'dart:developer';
 
+import 'package:bettersociety/main.dart';
 import 'package:bettersociety/pages/activity.dart';
 import 'package:bettersociety/pages/profile.dart';
 import 'package:bettersociety/pages/search.dart';
 import 'package:bettersociety/pages/upload.dart';
+import 'package:bettersociety/widgets/main-header.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
@@ -26,7 +28,8 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     pageController = PageController();
-    initialPage: 2;
+    initialPage:
+    2;
   }
 
   _logout() {
@@ -56,28 +59,29 @@ class _HomePageState extends State<HomePage> {
 
   Widget build(BuildContext context) {
     return Scaffold(
-        body: PageView(
-      controller: pageController,
-      onPageChanged: onPageChanged,
-      physics: NeverScrollableScrollPhysics(),
-      children: <Widget>[
-        ActivityFeedPage(),
-        UploadPage(),
-        SearchPage(),
-        ProfilePage(),
-      ],
-    ),
-    bottomNavigationBar: CupertinoTabBar(
-      currentIndex: pageIndex,
-      onTap: onTap,
-      activeColor: Colors.greenAccent,
-      items: [
-        const BottomNavigationBarItem(icon: Icon(Icons.whatshot)),
-        const BottomNavigationBarItem(icon: Icon(Icons.library_add, size: 35)),
-        const  BottomNavigationBarItem(icon: Icon(Icons.search)),
-        BottomNavigationBarItem(icon: Icon(Icons.account_circle)),
-      ],
-    ),
-    ); 
+      body: PageView(
+        controller: pageController,
+        onPageChanged: onPageChanged,
+        physics: NeverScrollableScrollPhysics(),
+        children: <Widget>[
+          ActivityFeedPage(),
+          UploadPage(),
+          SearchPage(),
+          ProfilePage(),
+        ],
+      ),
+      bottomNavigationBar: CupertinoTabBar(
+        currentIndex: pageIndex,
+        onTap: onTap,
+        activeColor: Colors.greenAccent,
+        items: [
+          const BottomNavigationBarItem(icon: Icon(Icons.whatshot)),
+          const BottomNavigationBarItem(
+              icon: Icon(Icons.library_add, size: 35)),
+          const BottomNavigationBarItem(icon: Icon(Icons.search)),
+          BottomNavigationBarItem(icon: Icon(Icons.account_circle)),
+        ],
+      ),
+    );
   }
 }

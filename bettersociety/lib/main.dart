@@ -2,9 +2,11 @@
 import 'dart:io';
 import 'package:bettersociety/pages/activity.dart';
 import 'package:bettersociety/pages/create.account.dart';
+import 'package:bettersociety/pages/create.post.dart';
 import 'package:bettersociety/pages/home.dart';
 import 'package:bettersociety/pages/reset.dart';
 import 'package:bettersociety/pages/signup.dart';
+import 'package:bettersociety/pages/upload.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -33,6 +35,7 @@ class MyApp extends StatelessWidget {
         title: "BetterSociety",
         theme: ThemeData(
           primarySwatch: Colors.deepPurple,
+          useMaterial3: true,
         ),
         debugShowCheckedModeBanner: false,
         home: const LoginPage(title: 'BetterSociety'),
@@ -42,6 +45,8 @@ class MyApp extends StatelessWidget {
           '/signup': (BuildContext context) => new SignupPage(),
           '/reset': (BuildContext context) => new ResetPasswordPage(),
           '/home': (BuildContext context) => new HomePage(),
+          '/post': (BuildContext context) => new CreatePostPage(),
+          '/upload': (BuildContext context) => new UploadPage(),
         });
   }
 }
@@ -61,6 +66,8 @@ class _LoginPageState extends State<LoginPage> {
   int _success = 1;
   String _userEmail = "";
   bool isAuth = false;
+  final _formKey = GlobalKey<FormState>();
+
 
   Future<void> _login() async {
     final user = (await _auth
@@ -104,7 +111,6 @@ class _LoginPageState extends State<LoginPage> {
       });
 
       doc = await usersRef.doc(account.uid).get();
-
     }
 
     currentUser = UserModel.fromDocument(doc);
@@ -126,10 +132,13 @@ class _LoginPageState extends State<LoginPage> {
                         TextStyle(fontSize: 40, fontWeight: FontWeight.bold)))
           ])),
           Container(
-              padding: EdgeInsets.only(top: 35, left: 20, right: 30),
+            padding: EdgeInsets.only(top: 35, left: 20, right: 30),
+            child: Form(
+              key: _formKey,
               child: Column(
                 children: <Widget>[
-                  TextField(
+                  TextFormField(
+                    validator: (value) => value!.isEmpty ? 'Email can\'t be empty' : null,
                     controller: _emailController,
                     decoration: InputDecoration(
                         labelText: 'Email',
@@ -145,7 +154,8 @@ class _LoginPageState extends State<LoginPage> {
                   SizedBox(
                     height: 20,
                   ),
-                  TextField(
+                  TextFormField(
+                    validator: (value) => value!.isEmpty ? 'Password can\'t be empty' : null,
                     controller: _passwordController,
                     decoration: InputDecoration(
                         labelText: 'Password',
@@ -191,14 +201,13 @@ class _LoginPageState extends State<LoginPage> {
                       height: 40,
                       child: Material(
                           borderRadius: BorderRadius.circular(20),
-                          shadowColor: Colors.greenAccent,
-                          color: Colors.black,
+                          shadowColor: Colors.black,
+                          color: Colors.greenAccent,
                           elevation: 7,
                           child: GestureDetector(
                             onTap: () async {
-                              await _login();
-
-                              if (_success == 2) {
+                              if (_formKey.currentState!.validate()) {
+                                await _login();
                                 Navigator.of(context).pushNamed('/home');
                               }
                             },
@@ -235,7 +244,7 @@ class _LoginPageState extends State<LoginPage> {
                     ],
                   ),
                 ],
-              ))
+              ))),
         ],
       ),
     );
