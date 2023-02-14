@@ -53,6 +53,9 @@ dependencies:
   get: ^4.6.5
   flutter_typeahead: ^4.3.3
   http: any
+  uuid: ^3.0.7
+  firebase_storage: ^11.0.11
+  image_picker: ^0.8.6+1
 
 dev_dependencies:
   flutter_test:

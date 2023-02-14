@@ -67,7 +67,7 @@ class _HomePageState extends State<HomePage> {
           ActivityFeedPage(),
           UploadPage(),
           SearchPage(),
-          ProfilePage(),
+          ProfilePage(profileId: firebaseAuth.currentUser!.uid),
         ],
       ),
       bottomNavigationBar: CupertinoTabBar(
