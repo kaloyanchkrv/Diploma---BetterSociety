@@ -5,7 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../widgets/main-header.dart';
-import 'create.account.dart';
+import 'create-account.dart';
 
 final usersRef = FirebaseFirestore.instance.collection('users');
 final FirebaseAuth _auth = FirebaseAuth.instance;

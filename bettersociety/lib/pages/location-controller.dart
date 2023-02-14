@@ -9,7 +9,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:http/http.dart' as http;
 
-import 'location.service.dart';
+import 'location-service.dart';
 
 class LocationController extends GetxController {
   Placemark _pickedLocation = Placemark();

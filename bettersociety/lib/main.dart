@@ -1,22 +1,24 @@
 // ignore_for_file: prefer_const_constructors
-import 'dart:io';
-import 'package:bettersociety/pages/activity.dart';
-import 'package:bettersociety/pages/create.account.dart';
+import 'package:bettersociety/pages/achievements.dart';
+import 'package:bettersociety/pages/create-account.dart';
 import 'package:bettersociety/pages/create.post.dart';
+import 'package:bettersociety/pages/edit-profile.dart';
 import 'package:bettersociety/pages/home.dart';
+import 'package:bettersociety/pages/profile.dart';
 import 'package:bettersociety/pages/reset.dart';
 import 'package:bettersociety/pages/signup.dart';
 import 'package:bettersociety/pages/upload.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:bettersociety/models/user.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final usersRef = FirebaseFirestore.instance.collection('users');
+final storageRef = FirebaseStorage.instance.ref();
 final DateTime timestamp = DateTime.now();
 UserModel? currentUser;
 
@@ -47,6 +49,9 @@ class MyApp extends StatelessWidget {
           '/home': (BuildContext context) => new HomePage(),
           '/post': (BuildContext context) => new CreatePostPage(),
           '/upload': (BuildContext context) => new UploadPage(),
+          '/achievements': (BuildContext context) => new AchievementsPage(),
+          '/edit-profile': (BuildContext context) => new EditProfilePage(currentUserId: currentUser!.id),
+          '/profile': (BuildContext context) => new ProfilePage(profileId: currentUser!.id,),
         });
   }
 }
