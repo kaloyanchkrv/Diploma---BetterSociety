@@ -1,6 +1,5 @@
 // ignore_for_file: no_logic_in_create_state
 
-
 import 'package:bettersociety/pages/home.dart';
 import 'package:bettersociety/widgets/main-header.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -51,7 +50,7 @@ class _CommentsState extends State<Comments> {
     );
   }
 
-  addComment(){
+  addComment() {
     commentsRef.doc(postId).collection('comments').add({
       'username': currentUser!.username,
       'comment': commentController.text,
@@ -59,6 +58,19 @@ class _CommentsState extends State<Comments> {
       'avatarUrl': auth.currentUser!.photoURL,
       'userId': currentUser!.id,
     });
+    bool isNotPostOwner = postOwnerId != currentUser!.id;
+    if (isNotPostOwner) {
+      feedRef.doc(postOwnerId).collection('feedItems').add({
+        'type': 'comment',
+        'commentData': commentController.text,
+        'username': currentUser!.username,
+        'userId': currentUser!.id,
+        'userProfileImg': auth.currentUser!.photoURL,
+        'postId': postId,
+        'timestamp': timestamp,
+      });
+    }
+
     commentController.clear();
   }
 
@@ -70,9 +82,7 @@ class _CommentsState extends State<Comments> {
         removeBackButton: false,
       ),
       body: Column(children: <Widget>[
-        Expanded(
-          child: buildComments()
-        ),
+        Expanded(child: buildComments()),
         Divider(),
         ListTile(
           title: TextFormField(
@@ -80,9 +90,8 @@ class _CommentsState extends State<Comments> {
             decoration: const InputDecoration(
               labelText: 'Write a comment...',
             ),
-          
           ),
-          trailing: OutlinedButton (
+          trailing: OutlinedButton(
             onPressed: () => addComment(),
             child: Text('Post'),
           ),

@@ -1,5 +1,7 @@
 // ignore_for_file: no_logic_in_create_state
 
+import 'package:bettersociety/pages/home.dart';
+import 'package:bettersociety/pages/profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -102,7 +104,7 @@ class _PostState extends State<Post> {
             backgroundColor: Colors.grey,
           ),
           title: GestureDetector(
-            onTap: () => print('showing profile'),
+            onTap: () => showProfile(context, profileId: user.id),
             child: Text(
               user.username,
               style: const TextStyle(
@@ -128,6 +130,7 @@ class _PostState extends State<Post> {
       postsRef.doc(ownerId).collection('posts').doc(postId).update({
         'likes.$currentUserId': false,
       });
+      removeLikeFromActivityFeed();
       setState(() {
         likeCount -= 1;
         isLiked = false;
@@ -137,10 +140,41 @@ class _PostState extends State<Post> {
       postsRef.doc(ownerId).collection('posts').doc(postId).update({
         'likes.$currentUserId': true,
       });
+      addLikeToActivityFeed();
       setState(() {
         likeCount += 1;
         isLiked = true;
         likes[currentUserId] = true;
+      });
+    }
+  }
+
+  addLikeToActivityFeed() {
+    bool isNotPostOwner = currentUserId != ownerId;
+    if (isNotPostOwner) {
+      feedRef.doc(ownerId).collection('feedItems').doc(postId).set({
+        'type': 'like',
+        'username': currentUser!.username,
+        'userId': currentUser!.id,
+        'userProfileImg': auth.currentUser!.photoURL,
+        'postId': postId,
+        'timestamp': timestamp,
+      });
+    }
+  }
+
+  removeLikeFromActivityFeed() {
+    bool isNotPostOwner = currentUserId != ownerId;
+    if (isNotPostOwner) {
+      feedRef
+          .doc(ownerId)
+          .collection('feedItems')
+          .doc(postId)
+          .get()
+          .then((doc) {
+        if (doc.exists) {
+          doc.reference.delete();
+        }
       });
     }
   }
@@ -155,7 +189,8 @@ class _PostState extends State<Post> {
     );
   }
 
-  showComments(BuildContext context, {required String postId, required String ownerId}) {
+  showComments(BuildContext context,
+      {required String postId, required String ownerId}) {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -274,4 +309,15 @@ class _PostState extends State<Post> {
       ],
     );
   }
+}
+
+showProfile(BuildContext context, {required String profileId}) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => ProfilePage(
+        profileId: profileId,
+      ),
+    ),
+  );
 }
