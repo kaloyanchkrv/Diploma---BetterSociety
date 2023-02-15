@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import '../main.dart';
 import '../models/user.dart';
 import '../widgets/progress-bar.dart';
+import 'comments.dart';
 
 class Post extends StatefulWidget {
   final String postId;
@@ -72,6 +73,9 @@ class _PostState extends State<Post> {
   int likeCount;
   final auth = FirebaseAuth.instance;
   int? value;
+  final String currentUserId = currentUser!.id;
+  bool isLiked = false;
+  final postsRef = FirebaseFirestore.instance.collection('posts');
 
   _PostState(
       {required this.postId,
@@ -117,12 +121,48 @@ class _PostState extends State<Post> {
     );
   }
 
+  handleLike() {
+    bool _isLiked = likes[currentUserId] == true;
+
+    if (_isLiked) {
+      postsRef.doc(ownerId).collection('posts').doc(postId).update({
+        'likes.$currentUserId': false,
+      });
+      setState(() {
+        likeCount -= 1;
+        isLiked = false;
+        likes[currentUserId] = false;
+      });
+    } else if (!_isLiked) {
+      postsRef.doc(ownerId).collection('posts').doc(postId).update({
+        'likes.$currentUserId': true,
+      });
+      setState(() {
+        likeCount += 1;
+        isLiked = true;
+        likes[currentUserId] = true;
+      });
+    }
+  }
+
   buildPostImage() {
     return GestureDetector(
-      onDoubleTap: () => print('liking post'),
+      onDoubleTap: handleLike,
       child: Stack(
         alignment: Alignment.center,
         children: [Text(description)],
+      ),
+    );
+  }
+
+  showComments(BuildContext context, {required String postId, required String ownerId}) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Comments(
+          postId: postId,
+          postOwnerId: ownerId,
+        ),
       ),
     );
   }
@@ -136,25 +176,29 @@ class _PostState extends State<Post> {
             Padding(
               padding: const EdgeInsets.only(top: 40.0, left: 20.0),
               child: GestureDetector(
-                onTap: () => print('liking post'),
-                child: const Icon(
-                  Icons.favorite_border,
+                onTap: handleLike,
+                child: Icon(
+                  isLiked ? Icons.favorite : Icons.favorite_border,
                   size: 28.0,
                   color: Colors.pink,
                 ),
               ),
             ),
-            // Padding(
-            //   padding: const EdgeInsets.only(top: 40.0, left: 20.0),
-            //   child: GestureDetector(
-            //     onTap: () => print('showing comments'),
-            //     child: Icon(
-            //       Icons.chat,
-            //       size: 28.0,
-            //       color: Colors.blue[900],
-            //     ),
-            //   ),
-            // ),
+            Padding(
+              padding: const EdgeInsets.only(top: 40.0, left: 20.0),
+              child: GestureDetector(
+                onTap: () => showComments(
+                  context,
+                  postId: postId,
+                  ownerId: ownerId,
+                ),
+                child: Icon(
+                  Icons.chat,
+                  size: 28.0,
+                  color: Colors.black,
+                ),
+              ),
+            ),
           ],
         ),
         Row(
@@ -176,36 +220,41 @@ class _PostState extends State<Post> {
         ),
         Container(
             child: BottomNavigationBar(
-              currentIndex: value == 'Yes'
-                  ? 0
-                  : value == 'Maybe'
-                      ? 1
-                      : value == 'No'
-                          ? 2
-                          : 0,
+          currentIndex: value == 'Yes'
+              ? 0
+              : value == 'Maybe'
+                  ? 1
+                  : value == 'No'
+                      ? 2
+                      : 0,
           onTap: (value) => setState(() {
             this.value = value;
           }),
-          items:  [
+          items: [
             BottomNavigationBarItem(
-              icon: value == 0 ? const Icon(Icons.check, color: Colors.green
-              , size: 25) : const Icon(Icons.check, color: Colors.grey, size: 25),
+              icon: value == 0
+                  ? const Icon(Icons.check, color: Colors.green, size: 25)
+                  : const Icon(Icons.check, color: Colors.grey, size: 25),
               label: 'Yes',
             ),
-             BottomNavigationBarItem(
-              icon: value == 1 ? const Icon(
-                Icons.question_mark,
-                color: Colors.yellow,
-                size: 25,
-              ) : const Icon(
-                Icons.question_mark,
-                color: Colors.grey,
-                size: 25,
-              ),
+            BottomNavigationBarItem(
+              icon: value == 1
+                  ? const Icon(
+                      Icons.question_mark,
+                      color: Colors.yellow,
+                      size: 25,
+                    )
+                  : const Icon(
+                      Icons.question_mark,
+                      color: Colors.grey,
+                      size: 25,
+                    ),
               label: 'Maybe',
             ),
-             BottomNavigationBarItem(
-              icon: value == 2 ? const Icon(Icons.close, color: Colors.red, size: 25) : const Icon(Icons.close, color: Colors.grey, size: 25),
+            BottomNavigationBarItem(
+              icon: value == 2
+                  ? const Icon(Icons.close, color: Colors.red, size: 25)
+                  : const Icon(Icons.close, color: Colors.grey, size: 25),
               label: 'No',
             ),
           ],
