@@ -84,10 +84,20 @@ class _SearchPageState extends State<SearchPage> {
         child: Center(
       child: ListView(
         shrinkWrap: true,
-        children: <Widget>[
-          SvgPicture.asset('assets/images/image2vector.svg',
-              height: orientation == Orientation.portrait ? 300.0 : 200.0,
-              width: 300.0),
+        children: const <Widget>[
+          Icon(
+            Icons.search,
+            color: Colors.grey,
+            size: 200.0,
+          ),
+          Text(
+            "Find Users...",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 40.0,
+            ),
+          ),
         ],
       ),
     ));

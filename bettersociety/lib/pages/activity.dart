@@ -48,7 +48,7 @@ class _ActivityFeedPageState extends State<ActivityFeedPage> {
             future: getActivity(),
             builder: (context, AsyncSnapshot snapshot) {
               if (!snapshot.hasData) {
-                return Text('kur');
+                return circularProgress();
               }
               return ListView(
                 children: snapshot.data,
@@ -114,7 +114,7 @@ class ActivityFeedItem extends StatelessWidget {
         color: Colors.grey[200],
         child: ListTile(
           title: GestureDetector(
-            onTap:() => showProfile(context, profileId: userId),
+            onTap: () => showProfile(context, profileId: userId),
             child: RichText(
               overflow: TextOverflow.ellipsis,
               text: TextSpan(
