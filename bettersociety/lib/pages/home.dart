@@ -6,6 +6,7 @@ import 'package:bettersociety/main.dart';
 import 'package:bettersociety/pages/activity.dart';
 import 'package:bettersociety/pages/profile.dart';
 import 'package:bettersociety/pages/search.dart';
+import 'package:bettersociety/pages/timeline.dart';
 import 'package:bettersociety/pages/upload.dart';
 import 'package:bettersociety/widgets/main-header.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -16,6 +17,7 @@ import 'package:flutter/material.dart';
 
 final firebaseAuth = FirebaseAuth.instance;
 final commentsRef = FirebaseFirestore.instance.collection('comments');
+final feedRef = FirebaseFirestore.instance.collection('feed');
 
 class HomePage extends StatefulWidget {
   @override
@@ -66,6 +68,7 @@ class _HomePageState extends State<HomePage> {
         onPageChanged: onPageChanged,
         physics: NeverScrollableScrollPhysics(),
         children: <Widget>[
+          TimelinePage(),
           ActivityFeedPage(),
           UploadPage(),
           SearchPage(),
@@ -77,7 +80,8 @@ class _HomePageState extends State<HomePage> {
         onTap: onTap,
         activeColor: Colors.greenAccent,
         items: [
-          const BottomNavigationBarItem(icon: Icon(Icons.whatshot)),
+          const BottomNavigationBarItem(icon: Icon(Icons.home)),
+          const BottomNavigationBarItem(icon: Icon(Icons.notifications_active_outlined)),
           const BottomNavigationBarItem(
               icon: Icon(Icons.library_add, size: 35)),
           const BottomNavigationBarItem(icon: Icon(Icons.search)),

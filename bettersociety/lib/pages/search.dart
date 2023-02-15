@@ -2,6 +2,7 @@
 
 import 'package:bettersociety/main.dart';
 import 'package:bettersociety/models/user.dart';
+import 'package:bettersociety/pages/profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -114,7 +115,7 @@ class UserResult extends StatelessWidget {
         color: Colors.greenAccent.withOpacity(0.7),
         child: Column(children: <Widget>[
           GestureDetector(
-            onTap: () => print("tapped"),
+            onTap: () => showProfile(context, profileId: user.id),
             child: ListTile(
               leading: CircleAvatar(
                 backgroundColor: Colors.grey,
@@ -141,4 +142,15 @@ class UserResult extends StatelessWidget {
           )
         ]));
   }
+}
+
+showProfile(BuildContext context, {required String profileId}) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => ProfilePage(
+        profileId: profileId,
+      ),
+    ),
+  );
 }

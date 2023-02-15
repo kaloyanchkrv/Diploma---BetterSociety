@@ -102,6 +102,11 @@ class _ProfilePageState extends State<ProfilePage> {
         text: "Edit Profile",
         func: () => edit(),
       );
+    } else {
+      return buildButton(
+        text: "Follow",
+        func: () => print("Follow"),
+      );
     }
   }
 
