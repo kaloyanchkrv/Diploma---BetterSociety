@@ -14,6 +14,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../main.dart';
 import '../widgets/main-header.dart';
+import 'home.dart';
 
 class ProfilePage extends StatefulWidget {
   final String profileId;
@@ -27,15 +28,64 @@ class _ProfilePageState extends State<ProfilePage> {
   final auth = FirebaseAuth.instance;
   final String? currentUserId = currentUser?.id;
   final postsRef = FirebaseFirestore.instance.collection('posts');
+  final followersRef = FirebaseFirestore.instance.collection('followers');
+  final followingRef = FirebaseFirestore.instance.collection('following');
   late String imageUrl = "";
   bool isLoading = false;
   int postCount = 0;
   List<Post> posts = [];
+  bool isFollowing = false;
+  int followerCount = 0;
+  int followingCount = 0;
 
   @override
   void initState() {
     super.initState();
     getProfilePosts();
+    checkIfFollowing();
+    getFollowers();
+    getFollowing();
+  }
+
+  getFollowers() async {
+    QuerySnapshot snapshot = await followersRef
+        .doc(widget.profileId)
+        .collection('userFollowers')
+        .get();
+    List<String> followerList = [];
+    snapshot.docs.forEach((doc) {
+      followerList.add(doc.id);
+    });
+    setState(() {
+      followerCount = followerList.length;
+    });
+    return followerList;
+  }
+
+  getFollowing() async {
+    QuerySnapshot snapshot = await followingRef
+        .doc(widget.profileId)
+        .collection('userFollowing')
+        .get();
+    List<String> followingList = [];
+    snapshot.docs.forEach((doc) {
+      followingList.add(doc.id);
+    });
+    setState(() {
+      followingCount = followingList.length;
+    });
+    return followingList;
+  }
+
+  checkIfFollowing() async {
+    DocumentSnapshot doc = await followersRef
+        .doc(widget.profileId)
+        .collection('userFollowers')
+        .doc(currentUserId)
+        .get();
+    setState(() {
+      isFollowing = doc.exists;
+    });
   }
 
   getProfilePosts() async {
@@ -78,18 +128,30 @@ class _ProfilePageState extends State<ProfilePage> {
             width: 250.0,
             height: 25.0,
             alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border.all(color: Colors.greenAccent),
-              borderRadius: BorderRadius.circular(6.0),
-            ),
+            decoration: isFollowing
+                ? BoxDecoration(
+                    color: Colors.greenAccent,
+                    border: Border.all(color: Colors.white),
+                    borderRadius: BorderRadius.circular(6.0),
+                  )
+                : BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(color: Colors.greenAccent),
+                    borderRadius: BorderRadius.circular(6.0),
+                  ),
             child: Text(
               text,
-              style: const TextStyle(
-                color: Colors.black,
-                fontSize: 15.0,
-                fontWeight: FontWeight.bold,
-              ),
+              style: isFollowing
+                  ? const TextStyle(
+                      color: Colors.white,
+                      fontSize: 15.0,
+                      fontWeight: FontWeight.bold,
+                    )
+                  : const TextStyle(
+                      color: Colors.black,
+                      fontSize: 15.0,
+                      fontWeight: FontWeight.bold,
+                    ),
             ),
           ),
         ));
@@ -102,12 +164,89 @@ class _ProfilePageState extends State<ProfilePage> {
         text: "Edit Profile",
         func: () => edit(),
       );
-    } else {
+    } else if (isFollowing) {
+      return buildButton(
+        text: "Unfollow",
+        func: () => handleUnfollow(),
+      );
+    } else if (!isFollowing) {
       return buildButton(
         text: "Follow",
-        func: () => print("Follow"),
+        func: () => handleFollow(),
       );
     }
+  }
+
+  handleUnfollow() {
+    setState(() {
+      isFollowing = false;
+    });
+
+    followersRef
+        .doc(widget.profileId)
+        .collection('userFollowers')
+        .doc(currentUserId)
+        .get()
+        .then((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
+
+    followingRef
+        .doc(currentUserId)
+        .collection('userFollowing')
+        .doc(widget.profileId)
+        .get()
+        .then((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
+
+    feedRef
+        .doc(widget.profileId)
+        .collection('feedItems')
+        .doc(currentUserId)
+        .get()
+        .then((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
+  }
+
+  handleFollow() {
+    setState(() {
+      isFollowing = true;
+    });
+
+    followersRef
+        .doc(widget.profileId)
+        .collection('userFollowers')
+        .doc(currentUserId)
+        .set({});
+
+    followingRef
+        .doc(currentUserId)
+        .collection('userFollowing')
+        .doc(widget.profileId)
+        .set({});
+
+    feedRef
+        .doc(widget.profileId)
+        .collection('feedItems')
+        .doc(currentUserId)
+        .set({
+      'type': 'follow',
+      'ownerId': widget.profileId,
+      'username': currentUser!.username,
+      'userId': currentUserId,
+      'userProfileImg': auth.currentUser!.photoURL,
+      'timestamp': DateTime.now(),
+      'postId': '',
+      'commentData': '',
+    });
   }
 
   buildCount(String label, int count) {
@@ -194,8 +333,8 @@ class _ProfilePageState extends State<ProfilePage> {
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: <Widget>[
                               buildCount("posts", postCount),
-                              buildCount("followers", 0),
-                              buildCount("following", 0),
+                              buildCount("followers", followerCount),
+                              buildCount("following", followingCount),
                             ],
                           ),
                           Row(
