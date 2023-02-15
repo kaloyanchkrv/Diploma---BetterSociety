@@ -136,6 +136,7 @@ class _ProfilePageState extends State<ProfilePage> {
     if (isLoading) {
       return circularProgress();
     }
+
     return Column(
         children: List.generate(
       posts.length,

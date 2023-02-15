@@ -3,6 +3,7 @@
 import 'package:bettersociety/main.dart';
 import 'package:bettersociety/models/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import '../widgets/progress-bar.dart';
@@ -103,6 +104,7 @@ class _SearchPageState extends State<SearchPage> {
 
 class UserResult extends StatelessWidget {
   final UserModel user;
+  final auth = FirebaseAuth.instance;
 
   UserResult(this.user);
 
@@ -116,7 +118,7 @@ class UserResult extends StatelessWidget {
             child: ListTile(
               leading: CircleAvatar(
                 backgroundColor: Colors.grey,
-                backgroundImage: NetworkImage(user.photoUrl),
+                backgroundImage: NetworkImage(auth.currentUser!.photoURL!),
               ),
               title: Text(
                 user.username,

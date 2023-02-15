@@ -8,12 +8,14 @@ import 'package:bettersociety/pages/profile.dart';
 import 'package:bettersociety/pages/search.dart';
 import 'package:bettersociety/pages/upload.dart';
 import 'package:bettersociety/widgets/main-header.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 final firebaseAuth = FirebaseAuth.instance;
+final commentsRef = FirebaseFirestore.instance.collection('comments');
 
 class HomePage extends StatefulWidget {
   @override
