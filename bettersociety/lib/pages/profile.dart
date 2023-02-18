@@ -1,24 +1,19 @@
-import 'dart:io';
-
 import 'package:bettersociety/models/user.dart';
 import 'package:bettersociety/pages/post.dart';
 import 'package:bettersociety/widgets/progress-bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:image_picker/image_picker.dart';
 
 import '../main.dart';
-import '../widgets/main-header.dart';
+
 import 'home.dart';
 
 class ProfilePage extends StatefulWidget {
-  final String profileId;
-  ProfilePage({required this.profileId});
+  final String? profileId;
+  const ProfilePage({super.key, this.profileId});
 
   @override
   _ProfilePageState createState() => _ProfilePageState();
@@ -53,9 +48,9 @@ class _ProfilePageState extends State<ProfilePage> {
         .collection('userFollowers')
         .get();
     List<String> followerList = [];
-    snapshot.docs.forEach((doc) {
+    for (var doc in snapshot.docs) {
       followerList.add(doc.id);
-    });
+    }
     setState(() {
       followerCount = followerList.length;
     });
@@ -68,9 +63,9 @@ class _ProfilePageState extends State<ProfilePage> {
         .collection('userFollowing')
         .get();
     List<String> followingList = [];
-    snapshot.docs.forEach((doc) {
+    for (var doc in snapshot.docs) {
       followingList.add(doc.id);
-    });
+    }
     setState(() {
       followingCount = followingList.length;
     });
@@ -93,8 +88,7 @@ class _ProfilePageState extends State<ProfilePage> {
       isLoading = true;
     });
     QuerySnapshot snapshot =
-        await postsRef.where('ownerId', isEqualTo: widget.profileId).get();
-
+        await postsRef.doc(widget.profileId).collection('userPosts').get();
     setState(() {
       isLoading = false;
       postCount = snapshot.docs.length;
@@ -102,13 +96,12 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 
-  void SelectedItem(BuildContext context, item) {
+  void selectedItem(BuildContext context, item) {
     switch (item) {
       case 1:
         Navigator.pushNamed(context, '/achievements');
         break;
       case 2:
-        print("User Logged out");
         auth.signOut();
         Navigator.pushNamed(context, '/login');
         break;
@@ -240,9 +233,9 @@ class _ProfilePageState extends State<ProfilePage> {
         .set({
       'type': 'follow',
       'ownerId': widget.profileId,
-      'username': currentUser!.username,
+      'username': currentUser?.username ?? "",
       'userId': currentUserId,
-      'userProfileImg': auth.currentUser!.photoURL,
+      'userProfileImg': auth.currentUser?.photoURL ?? "",
       'timestamp': DateTime.now(),
       'postId': '',
       'commentData': '',
@@ -262,7 +255,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ),
         Container(
-          margin: EdgeInsets.only(top: 4.0),
+          margin: const EdgeInsets.only(top: 4.0),
           child: Text(
             label,
             style: const TextStyle(
@@ -287,7 +280,7 @@ class _ProfilePageState extends State<ProfilePage> {
       (index) => Column(
         children: [
           posts[index],
-          Divider(),
+          const Divider(),
         ],
       ),
     ));
@@ -304,13 +297,13 @@ class _ProfilePageState extends State<ProfilePage> {
         UserModel user =
             UserModel.fromDocument(snapshot.data as DocumentSnapshot<Object?>);
         return Padding(
-            padding: EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16.0),
             child: Column(
               children: <Widget>[
                 Row(
                   children: <Widget>[
                     GestureDetector(
-                        child: auth.currentUser!.photoURL == ""
+                        child: auth.currentUser?.photoURL == ""
                             ? const CircleAvatar(
                                 child: Icon(
                                   Icons.person,
@@ -321,8 +314,8 @@ class _ProfilePageState extends State<ProfilePage> {
                             : CircleAvatar(
                                 radius: 40.0,
                                 backgroundColor: Colors.grey,
-                                backgroundImage:
-                                    NetworkImage(auth.currentUser!.photoURL!),
+                                backgroundImage: NetworkImage(
+                                    auth.currentUser?.photoURL ?? ""),
                               )),
                     Expanded(
                       flex: 1,
@@ -350,10 +343,10 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 Container(
                   alignment: Alignment.centerLeft,
-                  padding: EdgeInsets.only(top: 12.0),
+                  padding: const EdgeInsets.only(top: 12.0),
                   child: Text(
                     user.username,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16.0,
                     ),
@@ -361,10 +354,10 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 Container(
                   alignment: Alignment.centerLeft,
-                  padding: EdgeInsets.only(top: 4.0),
+                  padding: const EdgeInsets.only(top: 4.0),
                   child: Text(
                     user.bio,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16.0,
                     ),
@@ -380,17 +373,24 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+          ),
+          onPressed: () => Navigator.pop(context),
+        ),
         actions: [
           Theme(
             data: Theme.of(context).copyWith(
-                textTheme: TextTheme().apply(bodyColor: Colors.black),
+                textTheme: const TextTheme().apply(bodyColor: Colors.black),
                 dividerColor: Colors.white,
-                iconTheme: IconThemeData(color: Colors.white)),
+                iconTheme: const IconThemeData(color: Colors.white)),
             child: PopupMenuButton<int>(
               color: Colors.white,
               itemBuilder: (context) => [
-                PopupMenuItem<int>(value: 0, child: Text("Achievements")),
-                PopupMenuDivider(),
+                const PopupMenuItem<int>(value: 0, child: Text("Achievements")),
+                const PopupMenuDivider(),
                 PopupMenuItem<int>(
                     value: 2,
                     child: Row(
@@ -406,11 +406,10 @@ class _ProfilePageState extends State<ProfilePage> {
                       ],
                     )),
               ],
-              onSelected: (item) => SelectedItem(context, item),
+              onSelected: (item) => selectedItem(context, item),
             ),
           ),
         ],
-        automaticallyImplyLeading: false,
         title: Text(
           "Profile",
           style: GoogleFonts.signika(
@@ -423,7 +422,7 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
       body: ListView(children: <Widget>[
         buildProfileHeader(),
-        Divider(
+        const Divider(
           height: 0.0,
         ),
         buildProfilePosts(),

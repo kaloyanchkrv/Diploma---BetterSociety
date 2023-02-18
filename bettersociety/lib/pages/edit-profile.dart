@@ -12,9 +12,9 @@ import 'package:image_picker/image_picker.dart';
 import '../models/user.dart';
 
 class EditProfilePage extends StatefulWidget {
-  final String currentUserId;
+  final String? currentUserId;
 
-  EditProfilePage({required this.currentUserId});
+  const EditProfilePage({super.key, required this.currentUserId});
 
   @override
   _EditProfilePageState createState() => _EditProfilePageState();
@@ -50,7 +50,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     });
   }
 
-  void pickImage() async {
+  pickImage() async {
     final image = await ImagePicker().pickImage(
       source: ImageSource.gallery,
       maxWidth: 512,
@@ -60,35 +60,47 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
     Reference ref = FirebaseStorage.instance.ref().child("profileImage.jpg");
 
-    await ref.putFile(File(image!.path));
+    await ref.putFile(File(image?.path ?? ""));
     ref.getDownloadURL().then((value) {
-      auth.currentUser!.updatePhotoURL(value);
+      auth.currentUser?.updatePhotoURL(value);
     });
 
-    imageUrl = auth.currentUser!.photoURL!;
+    imageUrl = auth.currentUser?.photoURL ?? "";
   }
-  updateProfileData(){
+
+  updateProfileData() {
+    pickImage() async {
+      final image = await ImagePicker().pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 512,
+        maxHeight: 512,
+        imageQuality: 75,
+      );
+
+      imageUrl = auth.currentUser?.photoURL ?? "";
+    }
+
     setState(() {
-      usernameController.text.trim().length < 3 || usernameController.text.isEmpty
+      usernameController.text.trim().length < 3 ||
+              usernameController.text.isEmpty
           ? _usernameValid = false
           : _usernameValid = true;
       bioController.text.trim().length > 100
           ? _bioValid = false
-          : _bioValid = true; 
+          : _bioValid = true;
     });
 
-    if(_usernameValid && _bioValid){
+    if (_usernameValid && _bioValid) {
       usersRef.doc(widget.currentUserId).update({
         "username": usernameController.text,
         "bio": bioController.text,
         "photoUrl": imageUrl,
       });
-      final SnackBar snackbar =
-              SnackBar(content: Text("Profile updated!"));
-          ScaffoldMessenger.of(context).showSnackBar(snackbar);
-          Timer(Duration(seconds: 2), () {
-            Navigator.pop(context);
-          });
+      const SnackBar snackbar = SnackBar(content: Text("Profile updated!"));
+      ScaffoldMessenger.of(context).showSnackBar(snackbar);
+      Timer(const Duration(seconds: 2), () {
+        Navigator.pop(context);
+      });
     }
   }
 
@@ -101,11 +113,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
           style: TextStyle(color: Colors.grey),
         ),
         TextField(
-          controller: usernameController,
-          decoration: InputDecoration(
-            errorText: _usernameValid ? null : "Username too short",
-          )
-        ),
+            controller: usernameController,
+            decoration: InputDecoration(
+              errorText: _usernameValid ? null : "Username too short",
+            )),
       ],
     );
   }
@@ -119,19 +130,19 @@ class _EditProfilePageState extends State<EditProfilePage> {
           style: TextStyle(color: Colors.grey),
         ),
         TextField(
-          controller: bioController,
-          decoration: InputDecoration(
-            errorText: _bioValid ? null : "Bio too long",
-          )
-        ),
+            controller: bioController,
+            decoration: InputDecoration(
+              errorText: _bioValid ? null : "Bio too long",
+            )),
       ],
     );
   }
 
+  @override
   Widget build(BuildContext context) {
     final auth = FirebaseAuth.instance;
     return Scaffold(
-      key: _key,
+        key: _key,
         appBar: AppBar(
           backgroundColor: Colors.greenAccent,
           centerTitle: true,
@@ -154,58 +165,49 @@ class _EditProfilePageState extends State<EditProfilePage> {
             ? circularProgress()
             : ListView(
                 children: <Widget>[
-                  Container(
-                    child: Column(
-                      children: <Widget>[
-                        Padding(
-                          padding:
-                              const EdgeInsets.only(top: 16.0, bottom: 8.0),
-                          child: GestureDetector(
-                              onTap: () => pickImage(),
-                              child: auth.currentUser!.photoURL == ""
-                                  ? const CircleAvatar(
-                                      child: Icon(
-                                        Icons.person,
-                                        color: Colors.black,
-                                        size: 80,
-                                      ),
-                                    )
-                                  : CircleAvatar(
-                                      radius: 40.0,
-                                      backgroundColor: Colors.grey,
-                                      backgroundImage: NetworkImage(
-                                          auth.currentUser!.photoURL!),
-                                    )),
+                  Column(
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16.0, bottom: 8.0),
+                        child: GestureDetector(
+                            onTap: () => pickImage(),
+                            child: imageUrl == ""
+                                ? const Icon(Icons.add_a_photo,
+                                    size: 40.0, color: Colors.grey)
+                                : CircleAvatar(
+                                    radius: 40.0,
+                                    backgroundColor: Colors.grey,
+                                    backgroundImage: NetworkImage(imageUrl),
+                                  )),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          children: <Widget>[
+                            buildUsernameField(),
+                            const SizedBox(height: 10.0),
+                            buildBioField(),
+                          ],
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            children: <Widget>[
-                              buildUsernameField(),
-                              SizedBox(height: 10.0),
-                              buildBioField(),
-                            ],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: ElevatedButton(
+                          onPressed: updateProfileData,
+                          style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all<Color>(
+                                Colors.greenAccent),
                           ),
-                        ),
-                         Padding(
-                          padding: EdgeInsets.all(16.0),
-                          child: ElevatedButton(
-                            onPressed: updateProfileData ,
-                            style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all<Color>(
-                                  Colors.greenAccent),
-                            ),
-                            child: const Text(
-                              "Update Profile",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 20.0,
-                              ),
+                          child: const Text(
+                            "Update Profile",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20.0,
                             ),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ],
               ));

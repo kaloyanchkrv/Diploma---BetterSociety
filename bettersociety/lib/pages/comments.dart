@@ -1,12 +1,8 @@
-// ignore_for_file: no_logic_in_create_state
-
 import 'package:bettersociety/pages/home.dart';
 import 'package:bettersociety/widgets/main-header.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:timeago/timeago.dart' as timeago;
 
 import '../main.dart';
 import '../widgets/progress-bar.dart';
@@ -15,12 +11,12 @@ class Comments extends StatefulWidget {
   final String postId;
   final String postOwnerId;
 
-  Comments({required this.postId, required this.postOwnerId});
+  const Comments({super.key, required this.postId, required this.postOwnerId});
 
   @override
   _CommentsState createState() => _CommentsState(
-        postId: this.postId,
-        postOwnerId: this.postOwnerId,
+        postId: postId,
+        postOwnerId: postOwnerId,
       );
 }
 
@@ -83,7 +79,7 @@ class _CommentsState extends State<Comments> {
       ),
       body: Column(children: <Widget>[
         Expanded(child: buildComments()),
-        Divider(),
+        const Divider(),
         ListTile(
           title: TextFormField(
             controller: commentController,
@@ -93,7 +89,7 @@ class _CommentsState extends State<Comments> {
           ),
           trailing: OutlinedButton(
             onPressed: () => addComment(),
-            child: Text('Post'),
+            child: const Text('Post'),
           ),
         ),
       ]),
@@ -102,14 +98,14 @@ class _CommentsState extends State<Comments> {
 }
 
 class Comment extends StatelessWidget {
-  @override
   final String username;
   final String userId;
   final String avatarUrl;
   final String comment;
   final Timestamp timestamp;
 
-  Comment({
+  const Comment({
+    super.key,
     required this.username,
     required this.userId,
     required this.avatarUrl,
@@ -138,7 +134,7 @@ class Comment extends StatelessWidget {
           ),
           subtitle: Text(username),
         ),
-        Divider(),
+        const Divider(),
       ],
     );
   }

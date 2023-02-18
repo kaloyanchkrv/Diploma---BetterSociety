@@ -1,14 +1,11 @@
-// ignore_for_file: prefer_const_constructors
-
-import 'package:bettersociety/widgets/main-header.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 final firebaseAuth = FirebaseAuth.instance;
 
 class SignupPage extends StatefulWidget {
+  const SignupPage({super.key});
+
   @override
   _SignupPageState createState() => _SignupPageState();
 }
@@ -25,9 +22,7 @@ class _SignupPageState extends State<SignupPage> {
             .createUserWithEmailAndPassword(
                 email: _emailController.text,
                 password: _passwordController.text)
-            .catchError((err) {
-      print(err);
-    }))
+            .catchError((err) {}))
         .user;
     if (user != null) {
       setState(() {
@@ -47,25 +42,25 @@ class _SignupPageState extends State<SignupPage> {
         body: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-               Container(
-              child: Stack(children: <Widget>[
+          Stack(children: <Widget>[
             Container(
-                padding: EdgeInsets.fromLTRB(15, 110, 0, 0),
+                padding: const EdgeInsets.fromLTRB(15, 110, 0, 0),
                 alignment: Alignment.center,
                 child: const Text("BetterSociety",
                     style:
                         TextStyle(fontSize: 40, fontWeight: FontWeight.bold)))
-          ])),
-              Container(
-                padding: EdgeInsets.only(top: 35, left: 20, right: 30),
-                child: Form (
+          ]),
+          Container(
+              padding: const EdgeInsets.only(top: 35, left: 20, right: 30),
+              child: Form(
                   key: _formKey,
                   child: Column(
                     children: <Widget>[
                       TextFormField(
-                        validator: (value) => value!.isEmpty ? 'Email can\'t be empty' : null,
+                        validator: (value) =>
+                            value!.isEmpty ? 'Email can\'t be empty' : null,
                         controller: _emailController,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                             labelText: 'Email',
                             labelStyle: TextStyle(
                               fontFamily: 'Montserrat',
@@ -80,10 +75,11 @@ class _SignupPageState extends State<SignupPage> {
                         height: 20,
                       ),
                       TextFormField(
-                        validator: (value) => value!.isEmpty ? 'Password can\'t be empty' : null,
+                        validator: (value) =>
+                            value!.isEmpty ? 'Password can\'t be empty' : null,
                         controller: _passwordController,
-                        decoration: InputDecoration(
-                            labelText: 'Password', 
+                        decoration: const InputDecoration(
+                            labelText: 'Password',
                             labelStyle: TextStyle(
                               fontFamily: 'Montserrat',
                               fontWeight: FontWeight.bold,
@@ -94,13 +90,13 @@ class _SignupPageState extends State<SignupPage> {
                             )),
                         obscureText: true,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 5,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 40,
                       ),
-                      Container(
+                      SizedBox(
                           height: 40,
                           child: Material(
                               borderRadius: BorderRadius.circular(20),
@@ -113,7 +109,6 @@ class _SignupPageState extends State<SignupPage> {
                                     _register();
                                     Navigator.of(context).pushNamed('/login');
                                   }
-                                  
                                 },
                                 child: const Center(
                                   child: Text(
@@ -126,7 +121,7 @@ class _SignupPageState extends State<SignupPage> {
                                   ),
                                 ),
                               ))),
-                      SizedBox(
+                      const SizedBox(
                         height: 15,
                       ),
                       Row(
@@ -149,6 +144,6 @@ class _SignupPageState extends State<SignupPage> {
                       ),
                     ],
                   ))),
-            ]));
+        ]));
   }
 }

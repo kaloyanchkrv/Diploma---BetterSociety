@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-AppBar Header({bool isAppTitle = false, String titleText = "", removeBackButton = false}) {
+AppBar Header(
+    {bool isAppTitle = false,
+    String titleText = "",
+    removeBackButton = false}) {
   return AppBar(
     automaticallyImplyLeading: removeBackButton ? false : true,
     title: Text(

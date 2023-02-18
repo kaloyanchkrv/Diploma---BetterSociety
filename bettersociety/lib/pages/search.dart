@@ -1,16 +1,14 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:bettersociety/main.dart';
 import 'package:bettersociety/models/user.dart';
 import 'package:bettersociety/pages/profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import '../widgets/progress-bar.dart';
-import 'home.dart';
 
 class SearchPage extends StatefulWidget {
+  const SearchPage({super.key});
+
   @override
   _SearchPageState createState() => _SearchPageState();
 }
@@ -29,11 +27,11 @@ class _SearchPageState extends State<SearchPage> {
           );
         }
         List<UserResult> searchResults = [];
-        snapshot.data!.docs.forEach((doc) {
+        for (var doc in snapshot.data!.docs) {
           UserModel user = UserModel.fromDocument(doc);
           UserResult searchResult = UserResult(user);
           searchResults.add(searchResult);
-        });
+        }
         return ListView(
           children: searchResults,
         );
@@ -63,13 +61,12 @@ class _SearchPageState extends State<SearchPage> {
       backgroundColor: Colors.greenAccent,
       title: TextFormField(
         controller: searchController,
-        // ignore: prefer_const_constructors
         decoration: InputDecoration(
           hintText: "Search for a user",
           filled: false,
-          prefixIcon: Icon(Icons.account_box, size: 28.0),
+          prefixIcon: const Icon(Icons.account_box, size: 28.0),
           suffixIcon: IconButton(
-            icon: Icon(Icons.clear),
+            icon: const Icon(Icons.clear),
             onPressed: clearSearch,
           ),
         ),
@@ -79,9 +76,7 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   buildNoContent() {
-    final Orientation orientation = MediaQuery.of(context).orientation;
-    return Container(
-        child: Center(
+    return Center(
       child: ListView(
         shrinkWrap: true,
         children: const <Widget>[
@@ -100,7 +95,7 @@ class _SearchPageState extends State<SearchPage> {
           ),
         ],
       ),
-    ));
+    );
   }
 
   @override
@@ -117,36 +112,36 @@ class UserResult extends StatelessWidget {
   final UserModel user;
   final auth = FirebaseAuth.instance;
 
-  UserResult(this.user);
+  UserResult(this.user, {super.key});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-        color: Colors.greenAccent.withOpacity(0.7),
+        color: Colors.grey[200],
         child: Column(children: <Widget>[
           GestureDetector(
             onTap: () => showProfile(context, profileId: user.id),
             child: ListTile(
               leading: CircleAvatar(
                 backgroundColor: Colors.grey,
-                backgroundImage: NetworkImage(auth.currentUser!.photoURL!),
+                backgroundImage: NetworkImage(user.photoUrl),
               ),
               title: Text(
                 user.username,
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               subtitle: Text(
                 user.bio,
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.black,
                 ),
               ),
             ),
           ),
-          Divider(
+          const Divider(
             height: 2.0,
             color: Colors.black,
           )

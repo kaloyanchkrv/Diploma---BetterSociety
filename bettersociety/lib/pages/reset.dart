@@ -1,21 +1,19 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 final firebaseAuth = FirebaseAuth.instance;
 
 class ResetPasswordPage extends StatefulWidget {
+  const ResetPasswordPage({super.key});
+
   @override
   _ResetPasswordPageState createState() => _ResetPasswordPageState();
 }
 
 class _ResetPasswordPageState extends State<ResetPasswordPage> {
   final TextEditingController _emailController = TextEditingController();
-  int _success = 1;
-  String _userEmail = "";
+  final int _success = 1;
+  final String _userEmail = "";
   final _formKey = GlobalKey<FormState>();
 
   void _resetPassword() async {
@@ -28,18 +26,17 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
         body: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-          Container(
-              child: Stack(children: <Widget>[
+          Stack(children: <Widget>[
             Container(
-              padding: EdgeInsets.fromLTRB(15, 110, 0, 0),
+              padding: const EdgeInsets.fromLTRB(15, 110, 0, 0),
               child: const Text(
                 "Forgot Password",
                 style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
               ),
             )
-          ])),
+          ]),
           Container(
-              padding: EdgeInsets.only(top: 35, left: 20, right: 30),
+              padding: const EdgeInsets.only(top: 35, left: 20, right: 30),
               child: Form(
                   key: _formKey,
                   child: Column(
@@ -48,7 +45,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                         validator: (value) =>
                             value!.isEmpty ? 'Email can\'t be empty' : null,
                         controller: _emailController,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                             labelText: 'Email',
                             labelStyle: TextStyle(
                               fontFamily: 'Montserrat',
@@ -59,14 +56,14 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                               borderSide: BorderSide(color: Colors.green),
                             )),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 15,
                       ),
                     ],
                   ))),
           Container(
               height: 40,
-              margin: EdgeInsets.only(left: 25, right: 25),
+              margin: const EdgeInsets.only(left: 25, right: 25),
               child: Material(
                   borderRadius: BorderRadius.circular(20),
                   shadowColor: Colors.black,

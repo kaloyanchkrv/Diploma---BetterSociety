@@ -3,18 +3,17 @@ import 'package:bettersociety/pages/home.dart';
 import 'package:bettersociety/pages/profile.dart';
 import 'package:bettersociety/widgets/progress-bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../widgets/main-header.dart';
-import 'create-account.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 final usersRef = FirebaseFirestore.instance.collection('users');
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
 class ActivityFeedPage extends StatefulWidget {
+  const ActivityFeedPage({super.key});
+
   @override
   _ActivityFeedPageState createState() => _ActivityFeedPageState();
 }
@@ -28,9 +27,9 @@ class _ActivityFeedPageState extends State<ActivityFeedPage> {
         .limit(50)
         .get();
     List<ActivityFeedItem> feedItems = [];
-    snapshot.docs.forEach((doc) {
+    for (var doc in snapshot.docs) {
       feedItems.add(ActivityFeedItem.fromDocument(doc));
-    });
+    }
     return feedItems;
   }
 
@@ -43,18 +42,16 @@ class _ActivityFeedPageState extends State<ActivityFeedPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: Header(titleText: "Activity Feed", removeBackButton: true),
-        body: Container(
-          child: FutureBuilder(
-            future: getActivity(),
-            builder: (context, AsyncSnapshot snapshot) {
-              if (!snapshot.hasData) {
-                return circularProgress();
-              }
-              return ListView(
-                children: snapshot.data,
-              );
-            },
-          ),
+        body: FutureBuilder(
+          future: getActivity(),
+          builder: (context, AsyncSnapshot snapshot) {
+            if (!snapshot.hasData) {
+              return circularProgress();
+            }
+            return ListView(
+              children: snapshot.data,
+            );
+          },
         ));
   }
 }
@@ -70,7 +67,8 @@ class ActivityFeedItem extends StatelessWidget {
   final String userProfileImg;
   final Timestamp timestamp;
 
-  ActivityFeedItem({
+  const ActivityFeedItem({
+    super.key,
     required this.username,
     required this.userId,
     required this.type,
@@ -109,7 +107,7 @@ class ActivityFeedItem extends StatelessWidget {
     configurePreview();
 
     return Padding(
-      padding: EdgeInsets.only(bottom: 2.0),
+      padding: const EdgeInsets.only(bottom: 2.0),
       child: Container(
         color: Colors.grey[200],
         child: ListTile(
