@@ -1,6 +1,3 @@
-// ignore_for_file: prefer_const_constructors
-
-import 'package:bettersociety/main.dart';
 import 'package:bettersociety/pages/location-controller.dart';
 import 'package:bettersociety/widgets/main-header.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -10,11 +7,12 @@ import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../models/user.dart';
-import 'home.dart';
-import 'location-search-dialogue.dart';
 import 'package:uuid/uuid.dart';
 
 class CreatePostPage extends StatefulWidget {
+  final UserModel? currentUser;
+
+  const CreatePostPage({super.key, required this.currentUser});
   @override
   CreatePostPageState createState() => CreatePostPageState();
 }
@@ -29,24 +27,38 @@ class CreatePostPageState extends State<CreatePostPage> {
       TextEditingController();
   late final TextEditingController _addressController = TextEditingController();
   bool isUploading = false;
-  String postId = Uuid().v4();
+  bool isAttending = false;
+  String postId = const Uuid().v4();
   late final TextEditingController _captionController = TextEditingController();
 
   DropdownMenuItem<String> buildMenuItem(String category) => DropdownMenuItem(
       value: category,
-      child: Text(category, style: const TextStyle(color: Colors.black)));
+      child: Text(category,
+          style: const TextStyle(
+            color: Colors.black,
+          )));
 
   void _uploadPost() async {
-    postsRef.add({
-      'ownerId': FirebaseAuth.instance.currentUser!.uid,
-      'username': currentUser!.username,
-      "postId": postId,
-      "caption": _captionController.text,
-      "description": _descriptionController.text,
-      "location": _addressController.text,
-      "timestamp": DateTime.now(),
-      "likes": {},
+    setState(() {
+      isUploading = true;
     });
+
+    await postsRef
+        .doc(widget.currentUser?.id)
+        .collection('userPosts')
+        .doc(postId)
+        .set({
+      'postId': postId,
+      'ownerId': widget.currentUser?.id,
+      'username': widget.currentUser?.username,
+      'description': _descriptionController.text,
+      'location': _addressController.text,
+      'timestamp': Timestamp.now(),
+      'isAttending': isAttending,
+      "category": value,
+      'likes': {},
+    });
+
     _captionController.clear();
     _descriptionController.clear();
     _addressController.clear();
@@ -59,22 +71,19 @@ class CreatePostPageState extends State<CreatePostPage> {
     return GetBuilder<LocationController>(builder: (locationController) {
       return Scaffold(
           appBar: Header(removeBackButton: false, titleText: 'Create Post'),
-          
           body: ListView(children: <Widget>[
-            isUploading ? LinearProgressIndicator() : const Text(''),
-            Container(
+            isUploading ? const LinearProgressIndicator() : const Text(''),
+            SizedBox(
                 height: 220,
                 width: MediaQuery.of(context).size.width,
                 child: Center(
                   child: AspectRatio(
                     aspectRatio: 16 / 9,
-                    child: Container(
-                      child: GoogleMap(
-                        onMapCreated: (GoogleMapController controller) {},
-                        myLocationEnabled: true,
-                        initialCameraPosition: CameraPosition(
-                            target: LatLng(42.6677106, 23.302082), zoom: 10.0),
-                      ),
+                    child: GoogleMap(
+                      onMapCreated: (GoogleMapController controller) {},
+                      myLocationEnabled: true,
+                      initialCameraPosition: const CameraPosition(
+                          target: LatLng(42.6677106, 23.302082), zoom: 10.0),
                     ),
                   ),
                 )),
@@ -83,24 +92,22 @@ class CreatePostPageState extends State<CreatePostPage> {
                 backgroundImage: NetworkImage(
                     FirebaseAuth.instance.currentUser!.photoURL.toString()),
               ),
-              title: Container(
-                child: TextField(
-                    controller: _captionController,
-                    decoration: InputDecoration(
-                      hintText: "Write a caption...",
-                      hintStyle: TextStyle(
-                        fontFamily: 'Montserrat',
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey,
-                      ),
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.green),
-                      ),
-                    )),
-              ),
+              title: TextField(
+                  controller: _captionController,
+                  decoration: const InputDecoration(
+                    hintText: "Write a caption...",
+                    hintStyle: TextStyle(
+                      fontFamily: 'Montserrat',
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey,
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.green),
+                    ),
+                  )),
             ),
             Container(
-                padding: EdgeInsets.only(top: 35, left: 20, right: 30),
+                padding: const EdgeInsets.only(top: 35, left: 20, right: 30),
                 child: Form(
                     key: _formKey,
                     child: Column(
@@ -109,7 +116,7 @@ class CreatePostPageState extends State<CreatePostPage> {
                           validator: (value) =>
                               value!.isEmpty ? 'Field is mandatory' : null,
                           controller: _descriptionController,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                               labelText: 'Description',
                               labelStyle: TextStyle(
                                 fontFamily: 'Montserrat',
@@ -127,7 +134,7 @@ class CreatePostPageState extends State<CreatePostPage> {
                           validator: (value) =>
                               value!.isEmpty ? 'Field is mandatory' : null,
                           controller: _addressController,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                               labelText: 'Address',
                               labelStyle: TextStyle(
                                 fontFamily: 'Montserrat',
@@ -138,27 +145,35 @@ class CreatePostPageState extends State<CreatePostPage> {
                                 borderSide: BorderSide(color: Colors.green),
                               )),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 40,
                         ),
-                        Container(
-                            height: 40,
-                            decoration: BoxDecoration(
-                                border: Border.all(color: Colors.black),
-                                borderRadius: BorderRadius.circular(20)),
-                            child: DropdownButtonHideUnderline(
-                                child: DropdownButton<String>(
-                              value: value,
-                              items: categories.map(buildMenuItem).toList(),
-                              onChanged: (value) => setState(() {
-                                this.value = value;
-                              }),
-                              isExpanded: true,
-                            ))),
-                        SizedBox(
+                        DropdownButtonFormField(
+                          decoration: InputDecoration(
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(40),
+                              borderSide: const BorderSide(
+                                  color: Colors.black, width: 0.7),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(40),
+                              borderSide: const BorderSide(
+                                  color: Colors.black, width: 0.7),
+                            ),
+                            filled: false,
+                          ),
+                          value: value,
+                          onChanged: (newValue) {
+                            setState(() {
+                              value = newValue!;
+                            });
+                          },
+                          items: categories.map(buildMenuItem).toList(),
+                        ),
+                        const SizedBox(
                           height: 40,
                         ),
-                        Container(
+                        SizedBox(
                             height: 35,
                             child: Material(
                                 borderRadius: BorderRadius.circular(20),

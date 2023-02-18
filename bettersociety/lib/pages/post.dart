@@ -1,4 +1,4 @@
-// ignore_for_file: no_logic_in_create_state
+// ignore_for_file: no_logic_in_create_state, library_private_types_in_public_api
 
 import 'package:bettersociety/pages/home.dart';
 import 'package:bettersociety/pages/profile.dart';
@@ -19,7 +19,8 @@ class Post extends StatefulWidget {
   final String description;
   final dynamic likes;
 
-  Post({
+  const Post({
+    super.key,
     required this.postId,
     required this.ownerId,
     required this.username,
@@ -77,6 +78,7 @@ class _PostState extends State<Post> {
   int? value;
   final String currentUserId = currentUser!.id;
   bool isLiked = false;
+  bool isOwner = false;
   final postsRef = FirebaseFirestore.instance.collection('posts');
 
   _PostState(
@@ -115,12 +117,97 @@ class _PostState extends State<Post> {
           ),
           subtitle: Text(location),
           trailing: IconButton(
-            icon: Icon(Icons.more_vert),
-            onPressed: () => print('deleting post'),
+            icon: const Icon(Icons.more_vert),
+            onPressed: () => handleDelete(context),
           ),
         );
       },
     );
+  }
+
+  handleDelete(BuildContext parentContext) {
+    if (currentUserId == ownerId) {
+      isOwner = true;
+    }
+    return isOwner
+        ? showDialog(
+            context: parentContext,
+            builder: (context) {
+              return SimpleDialog(
+                title: const Text('Remove this post?'),
+                children: [
+                  SimpleDialogOption(
+                    onPressed: () {
+                      deletePost();
+                    },
+                    child: const Text(
+                      'Delete',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  ),
+                  SimpleDialogOption(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text(
+                      'Cancel',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ),
+                ],
+              );
+            },
+          )
+        : showDialog(
+            context: context,
+            builder: (context) {
+              return SimpleDialog(
+                title: const Text('Report this post?'),
+                children: [
+                  SimpleDialogOption(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text(
+                      'Report',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  ),
+                  SimpleDialogOption(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text(
+                      'Cancel',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ),
+                ],
+              );
+            },
+          );
+    ;
+  }
+
+  deletePost() async {
+    if (currentUserId == ownerId) {
+      postsRef.doc(ownerId).collection('posts').doc(postId).delete();
+      postsRef.doc(ownerId).collection('userPosts').doc(postId).delete();
+      QuerySnapshot activityFeedSnapshot = await feedRef
+          .doc(ownerId)
+          .collection('feedItems')
+          .where('postId', isEqualTo: postId)
+          .get();
+      for (var doc in activityFeedSnapshot.docs) {
+        if (doc.exists) {
+          doc.reference.delete();
+        }
+      }
+      QuerySnapshot commentsSnapshot =
+          await commentsRef.doc(postId).collection('comments').get();
+      for (var doc in commentsSnapshot.docs) {
+        if (doc.exists) {
+          doc.reference.delete();
+        }
+      }
+    }
+    Navigator.pop(context);
   }
 
   handleLike() {
@@ -227,7 +314,7 @@ class _PostState extends State<Post> {
                   postId: postId,
                   ownerId: ownerId,
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.chat,
                   size: 28.0,
                   color: Colors.black,
@@ -240,6 +327,11 @@ class _PostState extends State<Post> {
           children: [
             Container(
               margin: const EdgeInsets.only(left: 20.0),
+              padding: const EdgeInsets.only(
+                bottom: 10.0,
+                right: 20.0,
+                left: 20.0,
+              ),
               child: Text(
                 '$likeCount likes',
                 style: const TextStyle(
@@ -250,11 +342,10 @@ class _PostState extends State<Post> {
             ),
           ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
-        Container(
-            child: BottomNavigationBar(
+        BottomNavigationBar(
           currentIndex: value == 'Yes'
               ? 0
               : value == 'Maybe'
@@ -293,7 +384,7 @@ class _PostState extends State<Post> {
               label: 'No',
             ),
           ],
-        )),
+        ),
       ],
     );
   }

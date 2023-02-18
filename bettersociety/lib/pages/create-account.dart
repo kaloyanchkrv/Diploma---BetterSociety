@@ -1,11 +1,11 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'dart:async';
 
 import 'package:bettersociety/widgets/main-header.dart';
 import 'package:flutter/material.dart';
 
 class CreateAccountPage extends StatefulWidget {
+  const CreateAccountPage({super.key});
+
   @override
   _CreateAccountPageState createState() => _CreateAccountPageState();
 }
@@ -24,7 +24,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
           final SnackBar snackbar =
               SnackBar(content: Text("Welcome $username!"));
           ScaffoldMessenger.of(context).showSnackBar(snackbar);
-          Timer(Duration(seconds: 2), () {
+          Timer(const Duration(seconds: 2), () {
             Navigator.pop(context, username);
           });
         }
@@ -36,11 +36,12 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         key: _scaffoldKey,
-        appBar: Header(titleText: "Set up your profile", removeBackButton: true),
+        appBar:
+            Header(titleText: "Set up your profile", removeBackButton: true),
         body: ListView(children: <Widget>[
           Container(
             child: Column(children: <Widget>[
-              Padding(
+              const Padding(
                   padding: EdgeInsets.only(top: 25),
                   child: Center(
                     child: Text("Set your username",
@@ -49,9 +50,8 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                         )),
                   )),
               Padding(
-                padding: EdgeInsets.all(16),
-                child: Container(
-                    child: Form(
+                padding: const EdgeInsets.all(16),
+                child: Form(
                   key: _formKey,
                   child: TextFormField(
                     validator: (val) {
@@ -61,7 +61,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                       return null;
                     },
                     onSaved: (val) => username = val!,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: 'Username',
                       labelStyle: TextStyle(
@@ -73,7 +73,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                       hintText: "Username must be at least 3 characters long",
                     ),
                   ),
-                )),
+                ),
               ),
               GestureDetector(
                   onTap: submit,
@@ -84,7 +84,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                         color: Colors.greenAccent,
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Center(
+                      child: const Center(
                           child: Text(
                         "Submit",
                         style: TextStyle(
