@@ -105,6 +105,9 @@ class _ProfilePageState extends State<ProfilePage> {
         auth.signOut();
         Navigator.pushNamed(context, '/login');
         break;
+      case 3:
+        Navigator.pushNamed(context, '/settings');
+        break;
     }
   }
 
@@ -383,7 +386,21 @@ class _ProfilePageState extends State<ProfilePage> {
             child: PopupMenuButton<int>(
               color: Colors.white,
               itemBuilder: (context) => [
-                const PopupMenuItem<int>(value: 1, child: Text("Achievements")),
+                PopupMenuItem<int>(
+                  value: 1,
+                  child: Row(
+                    children: const [
+                      Icon(
+                        Icons.playlist_add_check_circle_rounded,
+                        color: Colors.green,
+                      ),
+                      SizedBox(
+                        width: 7,
+                      ),
+                      Text("Achievements")
+                    ],
+                  ),
+                ),
                 const PopupMenuDivider(),
                 PopupMenuItem<int>(
                     value: 2,
@@ -397,6 +414,21 @@ class _ProfilePageState extends State<ProfilePage> {
                           width: 7,
                         ),
                         Text("Logout")
+                      ],
+                    )),
+                const PopupMenuDivider(),
+                PopupMenuItem<int>(
+                    value: 3,
+                    child: Row(
+                      children: const [
+                        Icon(
+                          Icons.settings,
+                          color: Colors.black,
+                        ),
+                        SizedBox(
+                          width: 7,
+                        ),
+                        Text("Settings")
                       ],
                     )),
               ],

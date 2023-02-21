@@ -4,7 +4,9 @@ import 'package:bettersociety/pages/create.post.dart';
 import 'package:bettersociety/pages/edit-profile.dart';
 import 'package:bettersociety/pages/home.dart';
 import 'package:bettersociety/pages/profile.dart';
+import 'package:bettersociety/pages/qr-screen.dart';
 import 'package:bettersociety/pages/reset.dart';
+import 'package:bettersociety/pages/settings.dart';
 import 'package:bettersociety/pages/signup.dart';
 import 'package:bettersociety/pages/upload.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -60,6 +62,8 @@ class MyApp extends StatelessWidget {
           '/profile': (BuildContext context) => ProfilePage(
                 profileId: currentUser?.id,
               ),
+          '/settings': (BuildContext context) => SettingsPage(),
+          '/scanner': (BuildContext context) => const QrScannerScreen(),
         });
   }
 }
@@ -114,6 +118,7 @@ class _LoginPageState extends State<LoginPage> {
         "bio": "",
         "photoUrl": "",
         "hasAttended": 0,
+        "QRCode": "",
       });
 
       doc = await usersRef.doc(account?.uid).get();

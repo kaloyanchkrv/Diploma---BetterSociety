@@ -87,12 +87,15 @@ class _TimelinePageState extends State<TimelinePage> {
     setState(() {
       this.posts = posts;
     });
+
+    await buildTimeline();
   }
 
   buildTimeline() {
     if (posts.isEmpty) {
       return buildUsersToFollow();
     }
+    getTimeline();
     return ListView(
       children: posts,
     );
@@ -105,6 +108,10 @@ class _TimelinePageState extends State<TimelinePage> {
         if (!snapshot.hasData) {
           return circularProgress();
         }
+        RefreshIndicator(
+          onRefresh: getTimeline(),
+          child: buildTimeline(),
+        );
         List<UserResult> userResults = [];
         snapshot.data?.docs.forEach((doc) {
           UserModel user = UserModel.fromDocument(doc);
