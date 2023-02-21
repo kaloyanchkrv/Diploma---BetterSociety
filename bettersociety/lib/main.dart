@@ -19,6 +19,7 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
 final usersRef = FirebaseFirestore.instance.collection('users');
 final storageRef = FirebaseStorage.instance.ref();
 final followersRef = FirebaseFirestore.instance.collection('followers');
+final postsRef = FirebaseFirestore.instance.collection('posts');
 final DateTime timestamp = DateTime.now();
 UserModel? currentUser;
 
@@ -112,6 +113,7 @@ class _LoginPageState extends State<LoginPage> {
         "email": account?.email,
         "bio": "",
         "photoUrl": "",
+        "hasAttended": 0,
       });
 
       doc = await usersRef.doc(account?.uid).get();

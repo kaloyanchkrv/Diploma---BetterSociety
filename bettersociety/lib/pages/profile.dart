@@ -373,13 +373,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back,
-            color: Colors.white,
-          ),
-          onPressed: () => Navigator.pop(context),
-        ),
+        automaticallyImplyLeading: false,
         actions: [
           Theme(
             data: Theme.of(context).copyWith(
@@ -389,7 +383,7 @@ class _ProfilePageState extends State<ProfilePage> {
             child: PopupMenuButton<int>(
               color: Colors.white,
               itemBuilder: (context) => [
-                const PopupMenuItem<int>(value: 0, child: Text("Achievements")),
+                const PopupMenuItem<int>(value: 1, child: Text("Achievements")),
                 const PopupMenuDivider(),
                 PopupMenuItem<int>(
                     value: 2,

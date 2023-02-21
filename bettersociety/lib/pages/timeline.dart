@@ -33,12 +33,16 @@ class _TimelinePageState extends State<TimelinePage> {
     switch (item) {
       case 0:
         await getTimelineCategory("Cleaning");
-        break;
+        return;
       case 1:
         await getTimelineCategory("Food Preparing");
-        break;
-      default:
+        return;
+      case 2:
         await getTimelineCategory("Other");
+        return;
+      case 3:
+        await getTimeline();
+        return;
     }
   }
 
@@ -161,16 +165,18 @@ class _TimelinePageState extends State<TimelinePage> {
           Theme(
             data: Theme.of(context).copyWith(
                 textTheme: const TextTheme().apply(bodyColor: Colors.black),
-                dividerColor: Colors.white, 
+                dividerColor: Colors.white,
                 iconTheme: const IconThemeData(color: Colors.white)),
             child: PopupMenuButton<int>(
               color: Colors.white,
               itemBuilder: (context) => const [
                 PopupMenuItem<int>(value: 0, child: Text("Cleaning")),
                 PopupMenuDivider(),
-                PopupMenuItem(value: 1, child: Text("Food Preparing")),
+                PopupMenuItem<int>(value: 1, child: Text("Food Preparing")),
                 PopupMenuDivider(),
                 PopupMenuItem<int>(value: 2, child: Text("Other")),
+                PopupMenuDivider(),
+                PopupMenuItem<int>(value: 3, child: Text("All"))
               ],
               onSelected: (item) => selectedItem(context, item),
             ),

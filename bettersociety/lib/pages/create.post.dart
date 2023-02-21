@@ -27,7 +27,6 @@ class CreatePostPageState extends State<CreatePostPage> {
       TextEditingController();
   late final TextEditingController _addressController = TextEditingController();
   bool isUploading = false;
-  bool isAttending = false;
   String postId = const Uuid().v4();
   late final TextEditingController _captionController = TextEditingController();
 
@@ -54,7 +53,7 @@ class CreatePostPageState extends State<CreatePostPage> {
       'description': _descriptionController.text,
       'location': _addressController.text,
       'timestamp': Timestamp.now(),
-      'isAttending': isAttending,
+      'isAttending': {},
       "category": value,
       'likes': {},
     });
