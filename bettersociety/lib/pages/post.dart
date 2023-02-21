@@ -56,13 +56,13 @@ class Post extends StatefulWidget {
 
   @override
   _PostState createState() => _PostState(
-        postId: this.postId,
-        ownerId: this.ownerId,
-        username: this.username,
-        location: this.location,
-        description: this.description,
-        likes: this.likes,
-        likeCount: getLikeCount(this.likes),
+        postId: postId,
+        ownerId: ownerId,
+        username: username,
+        location: location,
+        description: description,
+        likes: likes,
+        likeCount: getLikeCount(likes),
       );
 }
 
@@ -79,6 +79,7 @@ class _PostState extends State<Post> {
   final String currentUserId = currentUser!.id;
   bool isLiked = false;
   bool isOwner = false;
+  int attendanceCount = 0;
   final postsRef = FirebaseFirestore.instance.collection('posts');
 
   _PostState(
@@ -99,7 +100,6 @@ class _PostState extends State<Post> {
         }
         UserModel user =
             UserModel.fromDocument(snapshot.data as DocumentSnapshot);
-        // bool isPostOwner = currentUserId == ownerId;
         return ListTile(
           leading: CircleAvatar(
             backgroundImage: NetworkImage(auth.currentUser!.photoURL!),
@@ -214,25 +214,28 @@ class _PostState extends State<Post> {
     bool _isLiked = likes[currentUserId] == true;
 
     if (_isLiked) {
-      postsRef.doc(ownerId).collection('posts').doc(postId).update({
-        'likes.$currentUserId': false,
-      });
-      removeLikeFromActivityFeed();
       setState(() {
         likeCount -= 1;
         isLiked = false;
         likes[currentUserId] = false;
+        postsRef.doc(ownerId).collection('userPosts').doc(postId).update({
+          'likes.$currentUserId': false,
+        });
       });
+      removeLikeFromActivityFeed();
     } else if (!_isLiked) {
-      postsRef.doc(ownerId).collection('posts').doc(postId).update({
+      postsRef.doc(ownerId).collection('userPosts').doc(postId).update({
         'likes.$currentUserId': true,
       });
-      addLikeToActivityFeed();
       setState(() {
         likeCount += 1;
         isLiked = true;
         likes[currentUserId] = true;
+        postsRef.doc(ownerId).collection('userPosts').doc(postId).update({
+          'likes.$currentUserId': true,
+        });
       });
+      addLikeToActivityFeed();
     }
   }
 
@@ -327,11 +330,6 @@ class _PostState extends State<Post> {
           children: [
             Container(
               margin: const EdgeInsets.only(left: 20.0),
-              padding: const EdgeInsets.only(
-                bottom: 10.0,
-                right: 20.0,
-                left: 20.0,
-              ),
               child: Text(
                 '$likeCount likes',
                 style: const TextStyle(
@@ -354,6 +352,22 @@ class _PostState extends State<Post> {
                       ? 2
                       : 0,
           onTap: (value) => setState(() {
+            if (value == 0) {
+              this.value = 0;
+              postsRef.doc(ownerId).collection('userPosts').doc(postId).update({
+                'isAttending.$currentUserId': true,
+              });
+            } else if (value == 1) {
+              this.value == 1;
+              postsRef.doc(ownerId).collection('userPosts').doc(postId).update({
+                'isAttending.$currentUserId': false,
+              });
+            } else if (value == 2) {
+              this.value == 2;
+              postsRef.doc(ownerId).collection('userPosts').doc(postId).update({
+                'isAttending.$currentUserId': false,
+              });
+            }
             this.value = value;
           }),
           items: [
@@ -397,6 +411,10 @@ class _PostState extends State<Post> {
         buildPostHeader(),
         buildPostImage(),
         buildPostFooter(),
+        const Divider(
+          height: 20,
+          thickness: 1,
+        )
       ],
     );
   }
