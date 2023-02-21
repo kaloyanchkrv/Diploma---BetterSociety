@@ -1,11 +1,9 @@
 // ignore_for_file: unused_local_variable, unrelated_type_equality_checks
 
 import 'package:bettersociety/widgets/main-header.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../main.dart';
-import '../models/user.dart';
 import '../widgets/progress-bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 

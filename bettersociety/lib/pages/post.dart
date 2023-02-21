@@ -76,7 +76,7 @@ class _PostState extends State<Post> {
   int likeCount;
   final auth = FirebaseAuth.instance;
   int? value;
-  final String currentUserId = currentUser!.id;
+  final String? currentUserId = currentUser?.id;
   bool isLiked = false;
   bool isOwner = false;
   int attendanceCount = 0;
@@ -102,7 +102,7 @@ class _PostState extends State<Post> {
             UserModel.fromDocument(snapshot.data as DocumentSnapshot);
         return ListTile(
           leading: CircleAvatar(
-            backgroundImage: NetworkImage(auth.currentUser!.photoURL!),
+            backgroundImage: NetworkImage(auth.currentUser?.photoURL ?? ""),
             backgroundColor: Colors.grey,
           ),
           title: GestureDetector(
@@ -244,9 +244,9 @@ class _PostState extends State<Post> {
     if (isNotPostOwner) {
       feedRef.doc(ownerId).collection('feedItems').doc(postId).set({
         'type': 'like',
-        'username': currentUser!.username,
-        'userId': currentUser!.id,
-        'userProfileImg': auth.currentUser!.photoURL,
+        'username': currentUser?.username,
+        'userId': currentUser?.id,
+        'userProfileImg': auth.currentUser?.photoURL,
         'postId': postId,
         'timestamp': timestamp,
       });
