@@ -60,26 +60,17 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
     Reference ref = FirebaseStorage.instance.ref().child("profileImage.jpg");
 
-    await ref.putFile(File(image?.path ?? ""));
+    await ref.putFile(File(image!.path));
     ref.getDownloadURL().then((value) {
       auth.currentUser?.updatePhotoURL(value);
-    });
 
-    imageUrl = auth.currentUser?.photoURL ?? "";
+      setState(() {
+        imageUrl = value;
+      });
+    });
   }
 
   updateProfileData() {
-    pickImage() async {
-      final image = await ImagePicker().pickImage(
-        source: ImageSource.gallery,
-        maxWidth: 512,
-        maxHeight: 512,
-        imageQuality: 75,
-      );
-
-      imageUrl = auth.currentUser?.photoURL ?? "";
-    }
-
     setState(() {
       usernameController.text.trim().length < 3 ||
               usernameController.text.isEmpty
@@ -140,7 +131,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    final auth = FirebaseAuth.instance;
     return Scaffold(
         key: _key,
         appBar: AppBar(
@@ -177,7 +167,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 : CircleAvatar(
                                     radius: 40.0,
                                     backgroundColor: Colors.grey,
-                                    backgroundImage: NetworkImage(imageUrl),
+                                    backgroundImage:
+                                        Image.network(imageUrl).image,
                                   )),
                       ),
                       Padding(

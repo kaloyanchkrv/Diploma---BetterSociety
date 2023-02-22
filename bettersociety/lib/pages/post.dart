@@ -211,9 +211,9 @@ class _PostState extends State<Post> {
   }
 
   handleLike() {
-    bool _isLiked = likes[currentUserId] == true;
+    bool isLike = likes[currentUserId] == true;
 
-    if (_isLiked) {
+    if (isLike) {
       setState(() {
         likeCount -= 1;
         isLiked = false;
@@ -223,7 +223,7 @@ class _PostState extends State<Post> {
         });
       });
       removeLikeFromActivityFeed();
-    } else if (!_isLiked) {
+    } else if (!isLike) {
       postsRef.doc(ownerId).collection('userPosts').doc(postId).update({
         'likes.$currentUserId': true,
       });

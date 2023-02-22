@@ -2,14 +2,12 @@ import 'package:bettersociety/main.dart';
 import 'package:bettersociety/pages/home.dart';
 import 'package:bettersociety/pages/profile.dart';
 import 'package:bettersociety/widgets/progress-bar.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../widgets/main-header.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 final usersRef = FirebaseFirestore.instance.collection('users');
-final FirebaseAuth _auth = FirebaseAuth.instance;
 
 class ActivityFeedPage extends StatefulWidget {
   const ActivityFeedPage({super.key});
