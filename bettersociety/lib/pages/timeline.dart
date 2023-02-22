@@ -9,6 +9,8 @@ import '../main.dart';
 import '../models/user.dart';
 import 'home.dart';
 
+ValueKey key = ValueKey(0);
+
 class TimelinePage extends StatefulWidget {
   final UserModel? currentUser;
 
@@ -29,20 +31,20 @@ class _TimelinePageState extends State<TimelinePage> {
     getFollowing();
   }
 
-  void selectedItem(BuildContext context, item) async {
+  void selectedItem(item) async {
     switch (item) {
       case 0:
         await getTimelineCategory("Cleaning");
-        return;
+        break;
       case 1:
         await getTimelineCategory("Food Preparing");
-        return;
+        break;
       case 2:
         await getTimelineCategory("Other");
-        return;
+        break;
       case 3:
         await getTimeline();
-        return;
+        break;
     }
   }
 
@@ -60,14 +62,15 @@ class _TimelinePageState extends State<TimelinePage> {
     QuerySnapshot snapshot = await timelineRef
         .doc(widget.currentUser?.id)
         .collection("timelinePosts")
-        .orderBy("timestamp", descending: true)
         .where(
           "category",
           isEqualTo: category,
         )
         .get();
+
     List<Post> posts =
         snapshot.docs.map((doc) => Post.fromDocument(doc)).toList();
+    key = ValueKey(key.hashCode + 1);
     setState(() {
       this.posts = posts;
     });
@@ -84,34 +87,80 @@ class _TimelinePageState extends State<TimelinePage> {
         .get();
     List<Post> posts =
         snapshot.docs.map((doc) => Post.fromDocument(doc)).toList();
+    key = ValueKey(key.hashCode + 1);
     setState(() {
       this.posts = posts;
     });
-
-    await buildTimeline();
   }
 
-  buildTimeline() {
-    if (posts.isEmpty) {
-      return buildUsersToFollow();
-    }
-    getTimeline();
-    return ListView(
-      children: posts,
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        actions: [
+          Theme(
+            data: Theme.of(context).copyWith(
+                textTheme: const TextTheme().apply(bodyColor: Colors.black),
+                dividerColor: Colors.white,
+                iconTheme:
+                    const IconThemeData(color: Color.fromARGB(255, 17, 7, 7))),
+            child: PopupMenuButton<int>(
+              color: Colors.white,
+              itemBuilder: (context) => const [
+                PopupMenuItem<int>(value: 0, child: Text("Cleaning")),
+                PopupMenuDivider(),
+                PopupMenuItem(value: 1, child: Text("Food Preparing")),
+                PopupMenuDivider(),
+                PopupMenuItem<int>(value: 2, child: Text("Other")),
+                PopupMenuDivider(),
+                PopupMenuItem(value: 3, child: Text("All")),
+              ],
+              onSelected: (item) => selectedItem(item),
+            ),
+          ),
+        ],
+        automaticallyImplyLeading: false,
+        title: Text(
+          "Better Society",
+          style: GoogleFonts.signika(
+            color: Colors.white,
+            fontSize: 30.0,
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.greenAccent,
+      ),
+      body: RefreshIndicator(
+        onRefresh: () async => await getTimeline(),
+        child: TimeLine(
+          followingList: followingList,
+          posts: posts,
+        ),
+      ),
     );
   }
+}
 
-  buildUsersToFollow() {
+class TimeLine extends StatelessWidget {
+  const TimeLine({required this.followingList, required this.posts, super.key});
+
+  final List<String> followingList;
+  final List<Post> posts;
+
+  @override
+  Widget build(BuildContext context) {
+    if (posts.isNotEmpty) {
+      return ListView(
+        key: key,
+        children: posts,
+      );
+    }
     return StreamBuilder(
       stream: usersRef.limit(30).snapshots(),
       builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (!snapshot.hasData) {
           return circularProgress();
         }
-        RefreshIndicator(
-          onRefresh: getTimeline(),
-          child: buildTimeline(),
-        );
         List<UserResult> userResults = [];
         snapshot.data?.docs.forEach((doc) {
           UserModel user = UserModel.fromDocument(doc);
@@ -161,49 +210,6 @@ class _TimelinePageState extends State<TimelinePage> {
           ),
         );
       },
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        actions: [
-          Theme(
-            data: Theme.of(context).copyWith(
-                textTheme: const TextTheme().apply(bodyColor: Colors.black),
-                dividerColor: Colors.white,
-                iconTheme: const IconThemeData(color: Colors.white)),
-            child: PopupMenuButton<int>(
-              color: Colors.white,
-              itemBuilder: (context) => const [
-                PopupMenuItem<int>(value: 0, child: Text("Cleaning")),
-                PopupMenuDivider(),
-                PopupMenuItem<int>(value: 1, child: Text("Food Preparing")),
-                PopupMenuDivider(),
-                PopupMenuItem<int>(value: 2, child: Text("Other")),
-                PopupMenuDivider(),
-                PopupMenuItem<int>(value: 3, child: Text("All"))
-              ],
-              onSelected: (item) => selectedItem(context, item),
-            ),
-          ),
-        ],
-        automaticallyImplyLeading: false,
-        title: Text(
-          "Better Society",
-          style: GoogleFonts.signika(
-            color: Colors.white,
-            fontSize: 30.0,
-          ),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.greenAccent,
-      ),
-      body: RefreshIndicator(
-        onRefresh: () async => await getTimeline(),
-        child: buildTimeline(),
-      ),
     );
   }
 }

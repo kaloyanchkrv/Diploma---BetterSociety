@@ -11,18 +11,18 @@ exports.onCreateFollower = functions.firestore
 
     const followedUserPostsRef = admin.firestore().collection("posts").doc(userId).collection("userPosts");
 
-    const timelinePostsRef = admin.firestore().collection("timeline").doc(followerId).collection("timelinePosts").doc();
+    const timelinePostsRef = admin.firestore().collection("timeline").doc(followerId).collection("timelinePosts");
 
-    followedUserPostsRef.get();
+    const querySnapshot = await followedUserPostsRef.get();
 
-    followedUserPostsRef.get().then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        if (doc.exists) {
-          const postData = doc.data();
-          timelinePostsRef.set(postData);
-        }
-      });
+    querySnapshot.forEach((doc) => {
+      if (doc.exists) {
+        const postId = doc.id;
+        const postData = doc.data();
+        timelinePostsRef.doc(postId).set(postData);
+      }
     });
+
     console.log("Follower Created", snapshot.id);
   });
 
