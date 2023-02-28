@@ -11,6 +11,8 @@ import 'package:image_picker/image_picker.dart';
 
 import '../models/user.dart';
 
+ValueKey key = const ValueKey(0);
+
 class EditProfilePage extends StatefulWidget {
   final String? currentUserId;
 
@@ -58,7 +60,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       imageQuality: 75,
     );
 
-    Reference ref = FirebaseStorage.instance.ref().child("profileImage.jpg");
+    Reference ref = FirebaseStorage.instance.ref().child(currentUser!.id);
 
     await ref.putFile(File(image!.path));
     ref.getDownloadURL().then((value) {
@@ -79,6 +81,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       bioController.text.trim().length > 100
           ? _bioValid = false
           : _bioValid = true;
+      key = ValueKey(key.hashCode + 1);
     });
 
     if (_usernameValid && _bioValid) {
@@ -142,14 +145,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 fontSize: 22.0,
                 fontWeight: FontWeight.bold,
               )),
-          actions: <Widget>[
-            IconButton(
-              icon: const Icon(Icons.done),
-              color: Colors.white,
-              iconSize: 30,
-              onPressed: () => Navigator.pop(context),
-            )
-          ],
         ),
         body: isLoading
             ? circularProgress()
@@ -162,10 +157,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         child: GestureDetector(
                             onTap: () => pickImage(),
                             child: imageUrl == ""
-                                ? const Icon(Icons.add_a_photo,
-                                    size: 40.0, color: Colors.grey)
+                                ? const Icon(Icons.person,
+                                    size: 50.0, color: Colors.grey)
                                 : CircleAvatar(
-                                    radius: 40.0,
+                                    radius: 50.0,
                                     backgroundColor: Colors.grey,
                                     backgroundImage:
                                         Image.network(imageUrl).image,

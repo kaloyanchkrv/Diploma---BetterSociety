@@ -102,7 +102,7 @@ class _PostState extends State<Post> {
             UserModel.fromDocument(snapshot.data as DocumentSnapshot);
         return ListTile(
           leading: CircleAvatar(
-            backgroundImage: NetworkImage(auth.currentUser?.photoURL ?? ""),
+            backgroundImage: NetworkImage(user.photoUrl),
             backgroundColor: Colors.grey,
           ),
           title: GestureDetector(
@@ -118,14 +118,14 @@ class _PostState extends State<Post> {
           subtitle: Text(location),
           trailing: IconButton(
             icon: const Icon(Icons.more_vert),
-            onPressed: () => handleDelete(context),
+            onPressed: () => handleDelete(context, snapshot),
           ),
         );
       },
     );
   }
 
-  handleDelete(BuildContext parentContext) {
+  handleDelete(BuildContext parentContext, snapshot) {
     if (currentUserId == ownerId) {
       isOwner = true;
     }
@@ -151,6 +151,33 @@ class _PostState extends State<Post> {
                       'Cancel',
                       style: TextStyle(color: Colors.black),
                     ),
+                  ),
+                  SimpleDialogOption(
+                    onPressed: () async {
+                      final data =
+                          await Navigator.pushNamed(context, '/scanner');
+                      await postsRef
+                          .doc(ownerId)
+                          .collection('userPosts')
+                          .doc(postId)
+                          .update({'hasAttended': data});
+                      setState(() {
+                        attendanceCount = attendanceCount + 1;
+                      });
+                      usersRef.doc(data as String?).update(
+                          {'hasAttended': attendanceCount, 'QRCode': data});
+                    },
+                    child: const Text(
+                      'Scan QR Code',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ),
+                  SimpleDialogOption(
+                    onPressed: () async {
+                      await Navigator.pushNamed(context, '/user-attend');
+                    },
+                    child: const Text("See who's attending",
+                        style: TextStyle(color: Colors.black)),
                   ),
                 ],
               );
@@ -343,61 +370,76 @@ class _PostState extends State<Post> {
         const SizedBox(
           height: 10,
         ),
-        BottomNavigationBar(
-          currentIndex: value == 'Yes'
-              ? 0
-              : value == 'Maybe'
-                  ? 1
-                  : value == 'No'
-                      ? 2
-                      : 0,
-          onTap: (value) => setState(() {
-            if (value == 0) {
-              this.value = 0;
-              postsRef.doc(ownerId).collection('userPosts').doc(postId).update({
-                'isAttending.$currentUserId': true,
-              });
-            } else if (value == 1) {
-              this.value == 1;
-              postsRef.doc(ownerId).collection('userPosts').doc(postId).update({
-                'isAttending.$currentUserId': false,
-              });
-            } else if (value == 2) {
-              this.value == 2;
-              postsRef.doc(ownerId).collection('userPosts').doc(postId).update({
-                'isAttending.$currentUserId': false,
-              });
-            }
-            this.value = value;
-          }),
-          items: [
-            BottomNavigationBarItem(
-              icon: value == 0
-                  ? const Icon(Icons.check, color: Colors.green, size: 25)
-                  : const Icon(Icons.check, color: Colors.grey, size: 25),
-              label: 'Yes',
-            ),
-            BottomNavigationBarItem(
-              icon: value == 1
-                  ? const Icon(
-                      Icons.question_mark,
-                      color: Colors.yellow,
-                      size: 25,
-                    )
-                  : const Icon(
-                      Icons.question_mark,
-                      color: Colors.grey,
-                      size: 25,
-                    ),
-              label: 'Maybe',
-            ),
-            BottomNavigationBarItem(
-              icon: value == 2
-                  ? const Icon(Icons.close, color: Colors.red, size: 25)
-                  : const Icon(Icons.close, color: Colors.grey, size: 25),
-              label: 'No',
-            ),
-          ],
+        Padding(
+          padding: const EdgeInsets.only(bottom: 5, top: 10),
+          child: BottomNavigationBar(
+            currentIndex: value == 'Yes'
+                ? 0
+                : value == 'Maybe'
+                    ? 1
+                    : value == 'No'
+                        ? 2
+                        : 0,
+            onTap: (value) => setState(() {
+              if (value == 0) {
+                this.value = 0;
+                postsRef
+                    .doc(ownerId)
+                    .collection('userPosts')
+                    .doc(postId)
+                    .update({
+                  'isAttending.$currentUserId': true,
+                });
+              } else if (value == 1) {
+                this.value == 1;
+                postsRef
+                    .doc(ownerId)
+                    .collection('userPosts')
+                    .doc(postId)
+                    .update({
+                  'isAttending.$currentUserId': false,
+                });
+              } else if (value == 2) {
+                this.value == 2;
+                postsRef
+                    .doc(ownerId)
+                    .collection('userPosts')
+                    .doc(postId)
+                    .update({
+                  'isAttending.$currentUserId': false,
+                });
+              }
+              this.value = value;
+            }),
+            items: [
+              BottomNavigationBarItem(
+                icon: value == 0
+                    ? const Icon(Icons.check, color: Colors.green, size: 25)
+                    : const Icon(Icons.check, color: Colors.grey, size: 25),
+                label: 'Yes',
+              ),
+              BottomNavigationBarItem(
+                icon: value == 1
+                    ? const Icon(
+                        Icons.question_mark,
+                        color: Colors.yellow,
+                        size: 25,
+                      )
+                    : const Icon(
+                        Icons.question_mark,
+                        color: Colors.grey,
+                        size: 25,
+                      ),
+                label: 'Maybe',
+              ),
+              BottomNavigationBarItem(
+                icon: value == 2
+                    ? const Icon(Icons.close, color: Colors.red, size: 25)
+                    : const Icon(Icons.close, color: Colors.grey, size: 25),
+                label: 'No',
+              ),
+            ],
+          ),
         ),
       ],
     );
@@ -411,9 +453,10 @@ class _PostState extends State<Post> {
         buildPostHeader(),
         buildPostImage(),
         buildPostFooter(),
-        const Divider(
-          height: 20,
+        Divider(
+          height: 15,
           thickness: 1,
+          color: Colors.grey[300],
         )
       ],
     );

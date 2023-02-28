@@ -18,7 +18,7 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: Header(titleText: "Settings", removeBackButton: false),
+        appBar: Header(titleText: "My Code", removeBackButton: false),
         body: Column(
           children: [
             Center(
@@ -30,26 +30,6 @@ class _SettingsPageState extends State<SettingsPage> {
                 version: QrVersions.auto,
               ),
             ),
-            ElevatedButton(
-              style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.greenAccent)),
-              onPressed: () async {
-                final data = await Navigator.pushNamed(context, '/scanner');
-                usersRef
-                    .doc(currentUser!.id)
-                    .update({'hasAttended': attendance++, 'QRCode': data});
-                print(data);
-              },
-              child: const Text(
-                "Scan QR",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            )
           ],
         ));
   }

@@ -11,7 +11,7 @@ AppBar Header(
       isAppTitle ? "Better Society" : titleText,
       style: GoogleFonts.signika(
         color: Colors.white,
-        fontSize: isAppTitle ? 30.0 : 30.0,
+        fontSize: 30.0,
       ),
     ),
     centerTitle: true,
