@@ -11,6 +11,8 @@ import '../main.dart';
 
 import 'home.dart';
 
+ValueKey key = const ValueKey(0);
+
 class ProfilePage extends StatefulWidget {
   final String? profileId;
   const ProfilePage({super.key, this.profileId});
@@ -117,7 +119,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   buildButton({required String text, required Function func}) {
     return Container(
-        padding: EdgeInsets.only(top: 2.0),
+        padding: const EdgeInsets.only(top: 2.0),
         child: TextButton(
           onPressed: () => func(),
           child: Container(
@@ -283,7 +285,6 @@ class _ProfilePageState extends State<ProfilePage> {
       (index) => Column(
         children: [
           posts[index],
-          const Divider(),
         ],
       ),
     ));
@@ -294,7 +295,7 @@ class _ProfilePageState extends State<ProfilePage> {
       future: usersRef.doc(widget.profileId).get(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return circularProgress();
+          return const Text('');
         }
 
         UserModel user =
@@ -306,19 +307,18 @@ class _ProfilePageState extends State<ProfilePage> {
                 Row(
                   children: <Widget>[
                     GestureDetector(
-                        child: auth.currentUser?.photoURL == ""
-                            ? const CircleAvatar(
-                                child: Icon(
-                                  Icons.person,
-                                  color: Colors.black,
-                                  size: 80,
-                                ),
+                        child: user.photoUrl == ""
+                            ? const Icon(
+                                Icons.person,
+                                color: Colors.black,
+                                size: 80,
                               )
                             : CircleAvatar(
                                 radius: 40.0,
                                 backgroundColor: Colors.grey,
                                 backgroundImage: NetworkImage(
-                                    auth.currentUser?.photoURL ?? ""),
+                                  user.photoUrl,
+                                ),
                               )),
                     Expanded(
                       flex: 1,
@@ -376,6 +376,12 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: currentUserId == widget.profileId
+            ? null
+            : IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () => Navigator.pop(context),
+              ),
         automaticallyImplyLeading: false,
         actions: [
           Theme(
@@ -422,13 +428,13 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: Row(
                       children: const [
                         Icon(
-                          Icons.settings,
+                          Icons.qr_code,
                           color: Colors.black,
                         ),
                         SizedBox(
                           width: 7,
                         ),
-                        Text("Settings")
+                        Text("QR Code")
                       ],
                     )),
               ],

@@ -9,7 +9,7 @@ import '../main.dart';
 import '../models/user.dart';
 import 'home.dart';
 
-ValueKey key = ValueKey(0);
+ValueKey key = const ValueKey(0);
 
 class TimelinePage extends StatefulWidget {
   final UserModel? currentUser;
@@ -95,6 +95,7 @@ class _TimelinePageState extends State<TimelinePage> {
 
   @override
   Widget build(BuildContext context) {
+    key = key;
     return Scaffold(
       appBar: AppBar(
         actions: [
@@ -131,7 +132,7 @@ class _TimelinePageState extends State<TimelinePage> {
         backgroundColor: Colors.greenAccent,
       ),
       body: RefreshIndicator(
-        onRefresh: () async => await getTimeline(),
+        onRefresh: () => getTimeline(),
         child: TimeLine(
           followingList: followingList,
           posts: posts,

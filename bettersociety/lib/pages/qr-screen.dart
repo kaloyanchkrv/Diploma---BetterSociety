@@ -89,28 +89,3 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
     );
   }
 }
-
-class _FlashIconButton extends StatelessWidget {
-  const _FlashIconButton(
-      {Key? key, required this.onPressed, required this.isFlashOn})
-      : super(key: key);
-
-  final VoidCallback onPressed;
-  final bool isFlashOn;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.bottomCenter,
-      child: IconButton(
-        padding: EdgeInsets.zero,
-        onPressed: onPressed,
-        icon: Icon(
-          isFlashOn ? Icons.flash_on : Icons.flash_off,
-          color: Colors.white,
-          size: 50,
-        ),
-      ),
-    );
-  }
-}

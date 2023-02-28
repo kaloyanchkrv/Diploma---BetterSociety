@@ -89,7 +89,7 @@ class _SearchPageState extends State<SearchPage> {
             "Find Users...",
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: Colors.black,
+              color: Colors.grey,
               fontSize: 40.0,
             ),
           ),

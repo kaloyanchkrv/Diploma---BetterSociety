@@ -160,6 +160,7 @@ class CreatePostPageState extends State<CreatePostPage> {
                                   color: Colors.black, width: 0.7),
                             ),
                             filled: false,
+                            disabledBorder: InputBorder.none,
                           ),
                           value: value,
                           onChanged: (newValue) {

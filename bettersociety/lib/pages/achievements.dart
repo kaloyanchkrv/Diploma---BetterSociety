@@ -25,8 +25,6 @@ Future<Widget> getAchievements() async {
     attendance = data['hasAttended'];
   }
 
-  print(attendance);
-
   if (attendance == 0) {
     return Column(
       children: const [
@@ -38,7 +36,7 @@ Future<Widget> getAchievements() async {
     );
   }
 
-  if (attendance == 1) {
+  if (attendance >= 1 && attendance < 5) {
     return Column(
       children: [
         Center(
@@ -49,7 +47,7 @@ Future<Widget> getAchievements() async {
           ),
         ),
         const Text('Bronze Medal'),
-        const Text("You've attended 1 event!"),
+        const Text("You've attended more than 1 event!"),
       ],
     );
   }
@@ -64,7 +62,7 @@ Future<Widget> getAchievements() async {
           ),
         ),
         const Text('Silver Medal'),
-        const Text("You've attended 5 events!"),
+        const Text("You've attended more than 5 events!"),
       ],
     );
   }
@@ -80,7 +78,7 @@ Future<Widget> getAchievements() async {
           ),
         ),
         const Text('Gold Medal'),
-        const Text("You've attended 10 events!"),
+        const Text("You've attended more than 10 events!"),
       ],
     );
   }
