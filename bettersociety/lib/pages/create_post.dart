@@ -53,7 +53,9 @@ class CreatePostPageState extends State<CreatePostPage> {
       'description': _descriptionController.text,
       'location': _addressController.text,
       'timestamp': Timestamp.now(),
-      'isAttending': {},
+      'isAttending': {
+        widget.currentUser?.id: true,
+      },
       "category": value,
       'likes': {},
     });

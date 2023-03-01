@@ -1,4 +1,4 @@
-// ignore_for_file: no_logic_in_create_state, library_private_types_in_public_api
+// ignore_for_file: no_logic_in_create_state, library_private_types_in_public_api, unrelated_type_equality_checks
 
 import 'package:bettersociety/pages/home.dart';
 import 'package:bettersociety/pages/profile.dart';
@@ -18,6 +18,7 @@ class Post extends StatefulWidget {
   final String location;
   final String description;
   final dynamic likes;
+  final dynamic isAttending;
 
   const Post({
     super.key,
@@ -27,6 +28,7 @@ class Post extends StatefulWidget {
     required this.location,
     required this.description,
     required this.likes,
+    required this.isAttending,
   });
 
   factory Post.fromDocument(DocumentSnapshot doc) {
@@ -37,6 +39,7 @@ class Post extends StatefulWidget {
       location: doc['location'],
       description: doc['description'],
       likes: doc['likes'],
+      isAttending: doc['isAttending'],
     );
   }
 
@@ -62,6 +65,7 @@ class Post extends StatefulWidget {
         location: location,
         description: description,
         likes: likes,
+        isAttending: isAttending,
         likeCount: getLikeCount(likes),
       );
 }
@@ -73,6 +77,7 @@ class _PostState extends State<Post> {
   final String location;
   final String description;
   Map likes;
+  Map isAttending;
   int likeCount;
   final auth = FirebaseAuth.instance;
   int? value;
@@ -89,6 +94,7 @@ class _PostState extends State<Post> {
       required this.location,
       required this.description,
       required this.likes,
+      required this.isAttending,
       required this.likeCount});
 
   buildPostHeader() {
@@ -276,6 +282,7 @@ class _PostState extends State<Post> {
         'userProfileImg': auth.currentUser?.photoURL,
         'postId': postId,
         'timestamp': timestamp,
+        "commentData": "",
       });
     }
   }
@@ -447,6 +454,12 @@ class _PostState extends State<Post> {
 
   @override
   Widget build(BuildContext context) {
+    isLiked = (likes[currentUserId] == true);
+    value = isAttending[currentUserId] == true
+        ? 0
+        : isAttending[currentUserId] == false
+            ? 1
+            : 2;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
