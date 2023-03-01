@@ -29,7 +29,6 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     pageController = PageController();
-    2;
   }
 
   logout() {
@@ -65,10 +64,10 @@ class _HomePageState extends State<HomePage> {
         physics: const NeverScrollableScrollPhysics(),
         children: <Widget>[
           TimelinePage(currentUser: currentUser),
-          ActivityFeedPage(),
+          const ActivityFeedPage(),
           const UploadPage(),
           const SearchPage(),
-          ProfilePage(profileId: currentUser?.id),
+          ProfilePage(profileId: currentUser!.id),
         ],
       ),
       bottomNavigationBar: CupertinoTabBar(

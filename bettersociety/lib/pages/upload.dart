@@ -1,4 +1,4 @@
-import 'package:bettersociety/widgets/main-header.dart';
+import 'package:bettersociety/widgets/main_header.dart';
 import 'package:flutter/material.dart';
 
 class UploadPage extends StatefulWidget {
@@ -11,7 +11,7 @@ class UploadPage extends StatefulWidget {
 class _UploadPageState extends State<UploadPage> {
   buildSplashScreen() {
     return Scaffold(
-      appBar: Header(titleText: "Upload", removeBackButton: true),
+      appBar: header(titleText: "Upload", removeBackButton: true),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[

@@ -1,10 +1,10 @@
 // ignore_for_file: unused_local_variable, unrelated_type_equality_checks
 
-import 'package:bettersociety/widgets/main-header.dart';
+import 'package:bettersociety/widgets/main_header.dart';
 import 'package:flutter/material.dart';
 
 import '../main.dart';
-import '../widgets/progress-bar.dart';
+import '../widgets/progress_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class AchievementsPage extends StatefulWidget {
@@ -109,7 +109,7 @@ class _AchievementsPageState extends State<AchievementsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: Header(titleText: "Achievements", removeBackButton: false),
+        appBar: header(titleText: "Achievements", removeBackButton: false),
         body: Column(
           children: <Widget>[
             buildAchievements(),

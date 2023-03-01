@@ -1,5 +1,5 @@
-import 'package:bettersociety/pages/location-controller.dart';
-import 'package:bettersociety/widgets/main-header.dart';
+import 'package:bettersociety/pages/location_controller.dart';
+import 'package:bettersociety/widgets/main_header.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -69,7 +69,7 @@ class CreatePostPageState extends State<CreatePostPage> {
     WidgetsFlutterBinding.ensureInitialized();
     return GetBuilder<LocationController>(builder: (locationController) {
       return Scaffold(
-          appBar: Header(removeBackButton: false, titleText: 'Create Post'),
+          appBar: header(removeBackButton: false, titleText: 'Create Post'),
           body: ListView(children: <Widget>[
             isUploading ? const LinearProgressIndicator() : const Text(''),
             SizedBox(

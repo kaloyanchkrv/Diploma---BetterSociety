@@ -1,10 +1,10 @@
 import 'package:bettersociety/main.dart';
 import 'package:bettersociety/pages/home.dart';
 import 'package:bettersociety/pages/profile.dart';
-import 'package:bettersociety/widgets/progress-bar.dart';
+import 'package:bettersociety/widgets/progress_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import '../widgets/main-header.dart';
+import '../widgets/main_header.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 final usersRef = FirebaseFirestore.instance.collection('users');
@@ -39,7 +39,7 @@ class _ActivityFeedPageState extends State<ActivityFeedPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: Header(titleText: "Activity Feed", removeBackButton: true),
+        appBar: header(titleText: "Activity Feed", removeBackButton: true),
         body: FutureBuilder(
           future: getActivity(),
           builder: (context, AsyncSnapshot snapshot) {

@@ -13,8 +13,6 @@ class SignupPage extends StatefulWidget {
 class _SignupPageState extends State<SignupPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  late bool _success;
-  late String _userEmail;
   final _formKey = GlobalKey<FormState>();
 
   void _register() async {
@@ -25,14 +23,9 @@ class _SignupPageState extends State<SignupPage> {
             .catchError((err) {}))
         .user;
     if (user != null) {
-      setState(() {
-        _success = true;
-        _userEmail = user.email!;
-      });
+      setState(() {});
     } else {
-      setState(() {
-        _success = false;
-      });
+      setState(() {});
     }
   }
 

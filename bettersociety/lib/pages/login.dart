@@ -1,12 +1,10 @@
-import 'dart:ui';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../main.dart';
 import '../models/user.dart';
-import 'create-account.dart';
+import 'create_account.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key, required this.title}) : super(key: key);
@@ -32,14 +30,13 @@ class _LoginPageState extends State<LoginPage> {
             .catchError((err) {}))
         .user;
     if (user != null) {
+      await createUserInFirestore();
       setState(() {
         isAuth = true;
       });
     } else {
       setState(() {});
     }
-
-    createUserInFirestore();
   }
 
   createUserInFirestore() async {
@@ -59,8 +56,13 @@ class _LoginPageState extends State<LoginPage> {
         "bio": "",
         "photoUrl": "",
         "hasAttended": 0,
-        "QRCode": "",
       });
+
+      await followersRef
+          .doc(currentUser!.id)
+          .collection('userFollowers')
+          .doc(currentUser!.id)
+          .set({});
 
       doc = await usersRef.doc(account?.uid).get();
     }

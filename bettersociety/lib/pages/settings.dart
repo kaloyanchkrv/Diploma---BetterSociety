@@ -1,5 +1,5 @@
 import 'package:bettersociety/main.dart';
-import 'package:bettersociety/widgets/main-header.dart';
+import 'package:bettersociety/widgets/main_header.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -18,7 +18,7 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: Header(titleText: "My Code", removeBackButton: false),
+        appBar: header(titleText: "My Code", removeBackButton: false),
         body: Column(
           children: [
             Center(

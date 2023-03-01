@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 
 import '../main.dart';
 import '../models/user.dart';
-import '../widgets/progress-bar.dart';
+import '../widgets/progress_bar.dart';
 import 'comments.dart';
 
 class Post extends StatefulWidget {
@@ -134,7 +134,7 @@ class _PostState extends State<Post> {
             context: parentContext,
             builder: (context) {
               return SimpleDialog(
-                title: const Text('Remove this post?'),
+                title: const Text('Options'),
                 children: [
                   SimpleDialogOption(
                     onPressed: () {

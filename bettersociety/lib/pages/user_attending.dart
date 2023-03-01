@@ -1,7 +1,7 @@
 // ignore_for_file: no_logic_in_create_state
 
 import 'package:bettersociety/main.dart';
-import 'package:bettersociety/widgets/main-header.dart';
+import 'package:bettersociety/widgets/main_header.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -29,7 +29,7 @@ class _AttendancePageState extends State<AttendancePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: Header(
+      appBar: header(
         titleText: "Attendance",
       ),
       body: Column(children: <Widget>[

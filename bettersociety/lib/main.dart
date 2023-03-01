@@ -1,22 +1,21 @@
 import 'package:bettersociety/pages/achievements.dart';
-import 'package:bettersociety/pages/create-account.dart';
-import 'package:bettersociety/pages/create.post.dart';
-import 'package:bettersociety/pages/edit-profile.dart';
+import 'package:bettersociety/pages/create_account.dart';
+import 'package:bettersociety/pages/create_post.dart';
+import 'package:bettersociety/pages/edit_profile.dart';
 import 'package:bettersociety/pages/home.dart';
 import 'package:bettersociety/pages/login.dart';
 import 'package:bettersociety/pages/profile.dart';
-import 'package:bettersociety/pages/qr-screen.dart';
+import 'package:bettersociety/pages/qr_screen.dart';
 import 'package:bettersociety/pages/reset.dart';
 import 'package:bettersociety/pages/settings.dart';
 import 'package:bettersociety/pages/signup.dart';
 import 'package:bettersociety/pages/upload.dart';
-import 'package:bettersociety/pages/user-attending.dart';
+import 'package:bettersociety/pages/user_attending.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:bettersociety/models/user.dart';
 
 final usersRef = FirebaseFirestore.instance.collection('users');
