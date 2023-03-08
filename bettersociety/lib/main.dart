@@ -1,5 +1,4 @@
 import 'package:bettersociety/pages/achievements.dart';
-import 'package:bettersociety/pages/create_account.dart';
 import 'package:bettersociety/pages/create_post.dart';
 import 'package:bettersociety/pages/edit_profile.dart';
 import 'package:bettersociety/pages/home.dart';
@@ -12,6 +11,7 @@ import 'package:bettersociety/pages/signup.dart';
 import 'package:bettersociety/pages/upload.dart';
 import 'package:bettersociety/pages/user_attending.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -22,6 +22,11 @@ final usersRef = FirebaseFirestore.instance.collection('users');
 final storageRef = FirebaseStorage.instance.ref();
 final followersRef = FirebaseFirestore.instance.collection('followers');
 final postsRef = FirebaseFirestore.instance.collection('posts');
+final firebaseAuth = FirebaseAuth.instance;
+final commentsRef = FirebaseFirestore.instance.collection('comments');
+final feedRef = FirebaseFirestore.instance.collection('feed');
+final timelineRef = FirebaseFirestore.instance.collection('timeline');
+final attendanceRef = FirebaseFirestore.instance.collection('attendance');
 final DateTime timestamp = DateTime.now();
 UserModel? currentUser;
 
@@ -63,7 +68,6 @@ class MyApp extends StatelessWidget {
               ),
           '/settings': (BuildContext context) => SettingsPage(),
           '/scanner': (BuildContext context) => const QrScannerScreen(),
-          '/user-attend': (BuildContext context) => const AttendancePage(),
         });
   }
 }
