@@ -1,3 +1,5 @@
+// ignore_for_file: no_logic_in_create_state
+
 import 'package:bettersociety/pages/home.dart';
 import 'package:bettersociety/widgets/main_header.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

@@ -9,11 +9,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-final firebaseAuth = FirebaseAuth.instance;
-final commentsRef = FirebaseFirestore.instance.collection('comments');
-final feedRef = FirebaseFirestore.instance.collection('feed');
-final timelineRef = FirebaseFirestore.instance.collection('timeline');
-
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -56,6 +51,7 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: PageView(

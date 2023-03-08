@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:bettersociety/main.dart';
+import 'package:bettersociety/pages/home.dart';
 import 'package:bettersociety/widgets/progress_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -137,15 +138,20 @@ class _EditProfilePageState extends State<EditProfilePage> {
     return Scaffold(
         key: _key,
         appBar: AppBar(
-          backgroundColor: Colors.greenAccent,
-          centerTitle: true,
-          title: const Text('Edit Profile',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 22.0,
-                fontWeight: FontWeight.bold,
-              )),
-        ),
+            backgroundColor: Colors.greenAccent,
+            centerTitle: true,
+            title: const Text('Edit Profile',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 22.0,
+                  fontWeight: FontWeight.bold,
+                )),
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            )),
         body: isLoading
             ? circularProgress()
             : ListView(

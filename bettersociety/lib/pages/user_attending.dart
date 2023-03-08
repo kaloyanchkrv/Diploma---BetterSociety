@@ -1,67 +1,93 @@
 // ignore_for_file: no_logic_in_create_state
 
+import 'dart:ffi';
+
 import 'package:bettersociety/main.dart';
+import 'package:bettersociety/models/user.dart';
 import 'package:bettersociety/widgets/main_header.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class AttendancePage extends StatefulWidget {
-  final String? postId;
-  final String? postOwnerId;
+import '../widgets/progress_bar.dart';
 
-  const AttendancePage({super.key, this.postId, this.postOwnerId});
+class AttendancePage extends StatefulWidget {
+  final String postId;
+  final String postOwnerId;
+
+  const AttendancePage(
+      {super.key, required this.postId, required this.postOwnerId});
 
   @override
-  _AttendancePageState createState() => _AttendancePageState(
+  AttendancePageState createState() => AttendancePageState(
         postId: postId,
         postOwnerId: postOwnerId,
       );
 }
 
-class _AttendancePageState extends State<AttendancePage> {
-  final String? postId;
-  final String? postOwnerId;
+class AttendancePageState extends State<AttendancePage> {
+  final String postId;
+  final String postOwnerId;
+  final auth = FirebaseAuth.instance;
 
-  _AttendancePageState({required this.postId, required this.postOwnerId});
+  AttendancePageState({required this.postId, required this.postOwnerId});
 
-  buildUserAttendanceList() async {}
+  buildUsers() {
+    return StreamBuilder(
+      stream:
+          attendanceRef.doc(postId).collection('userAttendance').snapshots(),
+      builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (!snapshot.hasData) {
+          return circularProgress();
+        }
+        List<UserAttendance> users = [];
+        snapshot.data!.docs.forEach((doc) {
+          users.add(UserAttendance.fromDocument(doc));
+        });
+        return ListView(
+          children: users,
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: header(
-        titleText: "Attendance",
+        titleText: 'Attendance',
+        removeBackButton: false,
       ),
       body: Column(children: <Widget>[
-        Expanded(child: buildUserAttendanceList()),
+        Expanded(child: buildUsers()),
         const Divider(),
       ]),
     );
   }
 }
 
-class UserAttend extends StatelessWidget {
+class UserAttendance extends StatelessWidget {
   final String username;
   final String userId;
-  final String avatarUrl;
-  final String comment;
+  final String? avatarUrl;
+  final bool isAttending;
   final Timestamp timestamp;
 
-  const UserAttend({
+  const UserAttendance({
     super.key,
     required this.username,
     required this.userId,
     required this.avatarUrl,
-    required this.comment,
+    required this.isAttending,
     required this.timestamp,
   });
 
-  factory UserAttend.fromDocument(DocumentSnapshot doc) {
-    return UserAttend(
+  factory UserAttendance.fromDocument(DocumentSnapshot doc) {
+    return UserAttendance(
       username: doc['username'],
       userId: doc['userId'],
       avatarUrl: doc['avatarUrl'],
-      comment: doc['comment'],
+      isAttending: doc['isAttending'],
       timestamp: doc['timestamp'],
     );
   }
@@ -71,9 +97,9 @@ class UserAttend extends StatelessWidget {
     return Column(
       children: <Widget>[
         ListTile(
-          title: Text(comment),
+          title: Text(isAttending ? 'Attending' : 'Not Attending'),
           leading: CircleAvatar(
-            backgroundImage: NetworkImage(avatarUrl),
+            backgroundImage: NetworkImage(avatarUrl ?? ''),
           ),
           subtitle: Text(username),
         ),

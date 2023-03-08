@@ -56,6 +56,7 @@ class _LoginPageState extends State<LoginPage> {
         "bio": "",
         "photoUrl": "",
         "hasAttended": 0,
+        "isGoingToAttend": {},
       });
 
       await followersRef

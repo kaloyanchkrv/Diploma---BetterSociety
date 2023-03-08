@@ -1,7 +1,7 @@
 // ignore_for_file: no_logic_in_create_state, library_private_types_in_public_api, unrelated_type_equality_checks
 
-import 'package:bettersociety/pages/home.dart';
 import 'package:bettersociety/pages/profile.dart';
+import 'package:bettersociety/pages/user_attending.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +18,6 @@ class Post extends StatefulWidget {
   final String location;
   final String description;
   final dynamic likes;
-  final dynamic isAttending;
 
   const Post({
     super.key,
@@ -28,7 +27,6 @@ class Post extends StatefulWidget {
     required this.location,
     required this.description,
     required this.likes,
-    required this.isAttending,
   });
 
   factory Post.fromDocument(DocumentSnapshot doc) {
@@ -39,7 +37,6 @@ class Post extends StatefulWidget {
       location: doc['location'],
       description: doc['description'],
       likes: doc['likes'],
-      isAttending: doc['isAttending'],
     );
   }
 
@@ -65,7 +62,6 @@ class Post extends StatefulWidget {
         location: location,
         description: description,
         likes: likes,
-        isAttending: isAttending,
         likeCount: getLikeCount(likes),
       );
 }
@@ -76,16 +72,14 @@ class _PostState extends State<Post> {
   final String username;
   final String location;
   final String description;
-  Map likes;
-  Map isAttending;
-  int likeCount;
-  final auth = FirebaseAuth.instance;
-  int? value;
   final String? currentUserId = currentUser?.id;
+  final auth = FirebaseAuth.instance;
+  Map likes;
+  int likeCount;
+  int? value;
   bool isLiked = false;
   bool isOwner = false;
   int attendanceCount = 0;
-  final postsRef = FirebaseFirestore.instance.collection('posts');
 
   _PostState(
       {required this.postId,
@@ -94,7 +88,6 @@ class _PostState extends State<Post> {
       required this.location,
       required this.description,
       required this.likes,
-      required this.isAttending,
       required this.likeCount});
 
   buildPostHeader() {
@@ -177,13 +170,6 @@ class _PostState extends State<Post> {
                       'Scan QR Code',
                       style: TextStyle(color: Colors.black),
                     ),
-                  ),
-                  SimpleDialogOption(
-                    onPressed: () async {
-                      await Navigator.pushNamed(context, '/user-attend');
-                    },
-                    child: const Text("See who's attending",
-                        style: TextStyle(color: Colors.black)),
                   ),
                 ],
               );
@@ -358,6 +344,20 @@ class _PostState extends State<Post> {
                 ),
               ),
             ),
+            Padding(
+                padding: const EdgeInsets.only(top: 40.0, left: 20.0),
+                child: GestureDetector(
+                  onTap: () => showUsers(
+                    context,
+                    postId: postId,
+                    ownerId: ownerId,
+                  ),
+                  child: const Icon(
+                    Icons.people,
+                    size: 28.0,
+                    color: Colors.greenAccent,
+                  ),
+                )),
           ],
         ),
         Row(
@@ -382,38 +382,64 @@ class _PostState extends State<Post> {
           child: BottomNavigationBar(
             currentIndex: value == 'Yes'
                 ? 0
-                : value == 'Maybe'
+                : value == 'No'
                     ? 1
-                    : value == 'No'
-                        ? 2
-                        : 0,
+                    : 0,
             onTap: (value) => setState(() {
-              if (value == 0) {
-                this.value = 0;
-                postsRef
-                    .doc(ownerId)
-                    .collection('userPosts')
-                    .doc(postId)
-                    .update({
-                  'isAttending.$currentUserId': true,
-                });
+              bool isNotPostOwner = ownerId != currentUserId;
+              if (!isNotPostOwner) {
+                if (value == 0) {
+                  this.value = 0;
+                  attendanceRef
+                      .doc(postId)
+                      .collection('userAttendance')
+                      .doc(ownerId)
+                      .set({
+                    'username': currentUser!.username,
+                    'timestamp': timestamp,
+                    'avatarUrl': auth.currentUser!.photoURL,
+                    'userId': currentUser!.id,
+                    'isAttending': true,
+                  });
+                } else if (value == 1) {
+                  this.value == 1;
+                  attendanceRef
+                      .doc(postId)
+                      .collection('userAttendance')
+                      .doc(ownerId)
+                      .set({
+                    'username': currentUser!.username,
+                    'timestamp': timestamp,
+                    'avatarUrl': auth.currentUser!.photoURL,
+                    'userId': currentUser!.id,
+                    'isAttending': false,
+                  });
+                }
+              } else if (isNotPostOwner) {
+                if (value == 0) {
+                  attendanceRef
+                      .doc(postId)
+                      .collection('userAttendance')
+                      .doc(currentUser!.id)
+                      .set({
+                    'username': currentUser!.username,
+                    'timestamp': timestamp,
+                    'avatarUrl': auth.currentUser!.photoURL,
+                    'userId': currentUser!.id,
+                    'isAttending': false,
+                  });
+                }
               } else if (value == 1) {
-                this.value == 1;
-                postsRef
-                    .doc(ownerId)
-                    .collection('userPosts')
+                attendanceRef
                     .doc(postId)
-                    .update({
-                  'isAttending.$currentUserId': false,
-                });
-              } else if (value == 2) {
-                this.value == 2;
-                postsRef
-                    .doc(ownerId)
-                    .collection('userPosts')
-                    .doc(postId)
-                    .update({
-                  'isAttending.$currentUserId': false,
+                    .collection('userAttendance')
+                    .doc(currentUser!.id)
+                    .set({
+                  'username': currentUser!.username,
+                  'timestamp': timestamp,
+                  'avatarUrl': auth.currentUser!.photoURL,
+                  'userId': currentUser!.id,
+                  'isAttending': false,
                 });
               }
               this.value = value;
@@ -427,20 +453,6 @@ class _PostState extends State<Post> {
               ),
               BottomNavigationBarItem(
                 icon: value == 1
-                    ? const Icon(
-                        Icons.question_mark,
-                        color: Colors.yellow,
-                        size: 25,
-                      )
-                    : const Icon(
-                        Icons.question_mark,
-                        color: Colors.grey,
-                        size: 25,
-                      ),
-                label: 'Maybe',
-              ),
-              BottomNavigationBarItem(
-                icon: value == 2
                     ? const Icon(Icons.close, color: Colors.red, size: 25)
                     : const Icon(Icons.close, color: Colors.grey, size: 25),
                 label: 'No',
@@ -455,11 +467,7 @@ class _PostState extends State<Post> {
   @override
   Widget build(BuildContext context) {
     isLiked = (likes[currentUserId] == true);
-    value = isAttending[currentUserId] == true
-        ? 0
-        : isAttending[currentUserId] == false
-            ? 1
-            : 2;
+    value == 'Yes' ? 0 : 1;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -472,6 +480,19 @@ class _PostState extends State<Post> {
           color: Colors.grey[300],
         )
       ],
+    );
+  }
+
+  showUsers(BuildContext context,
+      {required String postId, required String ownerId}) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AttendancePage(
+          postId: postId,
+          postOwnerId: ownerId,
+        ),
+      ),
     );
   }
 }

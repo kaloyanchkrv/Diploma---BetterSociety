@@ -1,3 +1,4 @@
+import 'package:bettersociety/main.dart';
 import 'package:bettersociety/pages/location_controller.dart';
 import 'package:bettersociety/widgets/main_header.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -53,9 +54,6 @@ class CreatePostPageState extends State<CreatePostPage> {
       'description': _descriptionController.text,
       'location': _addressController.text,
       'timestamp': Timestamp.now(),
-      'isAttending': {
-        widget.currentUser?.id: true,
-      },
       "category": value,
       'likes': {},
     });
