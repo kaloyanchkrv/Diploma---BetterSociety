@@ -426,7 +426,7 @@ class _PostState extends State<Post> {
                     'timestamp': timestamp,
                     'avatarUrl': auth.currentUser!.photoURL,
                     'userId': currentUser!.id,
-                    'isAttending': false,
+                    'isAttending': true,
                   });
                 }
               } else if (value == 1) {
